@@ -53,9 +53,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
@@ -92,62 +92,16 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <a id="more"></a>
-<p>maven 的常用命令和一些介绍，学习如何使用maven</p>
-<h2 id="常用命令介绍"><a href="#常用命令介绍" class="headerlink" title="常用命令介绍"></a>常用命令介绍</h2><h3 id="清理（删除target目录下的编译内容）"><a href="#清理（删除target目录下的编译内容）" class="headerlink" title="清理（删除target目录下的编译内容）"></a>清理（删除target目录下的编译内容）</h3><p><code>mvn clean</code></p>
-<h3 id="编译项目"><a href="#编译项目" class="headerlink" title="编译项目"></a>编译项目</h3><p><code>mvn compile</code></p>
-<h3 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h3><p><code>mvn package</code></p>
-<h3 id="安装当前项目的输出文件到本地仓库"><a href="#安装当前项目的输出文件到本地仓库" class="headerlink" title="安装当前项目的输出文件到本地仓库"></a>安装当前项目的输出文件到本地仓库</h3><p><code>mvn install</code></p>
-<h3 id="安装指定文件到本地仓库"><a href="#安装指定文件到本地仓库" class="headerlink" title="安装指定文件到本地仓库"></a>安装指定文件到本地仓库</h3><p><code>mvn install:install-file -DgroupId=&lt;groupId&gt; -DartifactId=&lt;artifactId&gt; -Dversion=1.0.0 -Dpackaging=jar -Dfile=&lt;myfie.jar&gt;</code></p>
-<h3 id="打包时跳过测试"><a href="#打包时跳过测试" class="headerlink" title="打包时跳过测试"></a>打包时跳过测试</h3><p><code>mvn package -Dmaven.test.skip=true</code></p>
-<h3 id="生成站点目录"><a href="#生成站点目录" class="headerlink" title="生成站点目录"></a>生成站点目录</h3><p><code>mvn site</code></p>
-<h3 id="生成站点目录并发布"><a href="#生成站点目录并发布" class="headerlink" title="生成站点目录并发布"></a>生成站点目录并发布</h3><p><code>mvn site-deploy</code></p>
-<h2 id="POM-xml介绍"><a href="#POM-xml介绍" class="headerlink" title="POM.xml介绍"></a>POM.xml介绍</h2><blockquote>
-<p>POM(Project Object Model),这个文件配置了maven打包、编译、版本、路径等等信息。</p>
-</blockquote>
-<h3 id="Maven-坐标"><a href="#Maven-坐标" class="headerlink" title="Maven 坐标"></a>Maven 坐标</h3><p>maven坐标为各种构件引入了秩序，任何一个构件必须明确定义自己的坐标，一组maven坐标包含: groupId、artifactId、version、packaging、classifier</p>
-<h4 id="groupId"><a href="#groupId" class="headerlink" title="groupId"></a>groupId</h4><blockquote>
-<p>定义当前maven项目隶属的实际项目，一个实际项目会有一个或多个maven项目。例如：springframework这一实际项目，包含多个maven项目，如spring-core、spring-aop、spring-beans、spring-webmvc等等。</p>
-</blockquote>
-<h4 id="artifactId"><a href="#artifactId" class="headerlink" title="artifactId"></a>artifactId</h4><blockquote>
-<p>定义一个实际项目中的maven项目（模块），建议使用实际项目为前缀，例如org.hibernate。</p>
-</blockquote>
-<h4 id="version"><a href="#version" class="headerlink" title="version"></a>version</h4><blockquote>
-<p>定义maven项目当前的版本。</p>
-</blockquote>
-<h4 id="packaging"><a href="#packaging" class="headerlink" title="packaging"></a>packaging</h4><blockquote>
-<p>定义maven项目打包方式，一般有jar、war、pom等。</p>
-</blockquote>
-<h4 id="classifier"><a href="#classifier" class="headerlink" title="classifier"></a>classifier</h4><blockquote>
-<p>定义maven在相同版本下针对不同环境或者jdk使用的jar。</p>
-</blockquote>
-<h3 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h3><h4 id="基础标签"><a href="#基础标签" class="headerlink" title="基础标签"></a>基础标签</h4><p>描述了项目的坐标和其他信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line">&lt;groupId&gt;com.xxx&lt;/groupId&gt;</span><br><span class="line">&lt;artifactId&gt;xxx_api&lt;/artifactId&gt;</span><br><span class="line">&lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</span><br><span class="line">&lt;packaging&gt;war&lt;/packaging&gt;</span><br><span class="line">&lt;name&gt;project name&lt;/name&gt;</span><br><span class="line">&lt;url&gt;http://maven.apache.org&lt;/url&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="继承标签"><a href="#继承标签" class="headerlink" title="继承标签"></a>继承标签</h4><p>描述了父项目的坐标和路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;parent&gt;</span><br><span class="line">	&lt;groupId&gt;com.crm&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;crm-parent&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</span><br><span class="line">	&lt;relativePath&gt;../crm-parent/pom.xml&lt;/relativePath&gt;</span><br><span class="line">&lt;/parent&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="聚合标签"><a href="#聚合标签" class="headerlink" title="聚合标签"></a>聚合标签</h4><p>描述了需要管理的子项目的路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;modules&gt;</span><br><span class="line">	&lt;module&gt;../crm-dao&lt;/module&gt;</span><br><span class="line">	&lt;module&gt;../crm-service&lt;/module&gt;</span><br><span class="line">	&lt;module&gt;../crm-web&lt;/module&gt;</span><br><span class="line">&lt;/modules&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="依赖标签"><a href="#依赖标签" class="headerlink" title="依赖标签"></a>依赖标签</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt; javax.servlet &lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;jstl/artifactId&gt;</span><br><span class="line">        &lt;version&gt;1.2&lt;/version&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">    ……</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="构建标签"><a href="#构建标签" class="headerlink" title="构建标签"></a>构建标签</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;build&gt;</span><br><span class="line">    &lt;finalName&gt;crm-web &lt;/finalName&gt;</span><br><span class="line">    &lt;resources&gt;</span><br><span class="line">        &lt;resource&gt;</span><br><span class="line">            &lt;directory&gt;$&#123;basedir&#125;/src/$&#123;env&#125;/resources&lt;/directory&gt;</span><br><span class="line">        &lt;/resource&gt;</span><br><span class="line">    &lt;/resources&gt;</span><br><span class="line">    &lt;outputDirectory&gt;$&#123;basedir&#125;/src/main/webapp/WEB-INF/classes&lt;/outputDirectory&gt;</span><br><span class="line">    &lt;plugins&gt;</span><br><span class="line">        &lt;plugin&gt;</span><br><span class="line">            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;2.6&lt;/version&gt;</span><br><span class="line">            &lt;configuration&gt;</span><br><span class="line">                &lt;warName&gt;xxxxxx&lt;/warName&gt;</span><br><span class="line">            &lt;/configuration&gt;</span><br><span class="line">        &lt;/plugin&gt;</span><br><span class="line">        &lt;plugin&gt;</span><br><span class="line">               &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">               &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;</span><br><span class="line">               &lt;version&gt;2.3.2&lt;/version&gt;</span><br><span class="line">               &lt;configuration&gt;</span><br><span class="line">                   &lt;source&gt;$&#123;jdk.version&#125;&lt;/source&gt;</span><br><span class="line">                   &lt;target&gt;$&#123;jdk.version&#125;&lt;/target&gt;</span><br><span class="line">               &lt;/configuration&gt;</span><br><span class="line">           &lt;/plugin&gt;</span><br><span class="line">    &lt;/plugins&gt;</span><br><span class="line">&lt;/build&gt;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>resources:  描述工程中资源的位置</li>
-<li>outputDirectory: 项目输出的路径，默认情况下，项目的编译class是放在${basedir}/target 下</li>
-<li>plugin: 插件标签，描述项目需要的插件和插件配置</li>
-<li>configuration: 插件的一些配置信息</li>
-</ul>
-<h3 id="Maven-隐式变量"><a href="#Maven-隐式变量" class="headerlink" title="Maven 隐式变量"></a>Maven 隐式变量</h3><ul>
-<li>${basedir} 项目根目录</li>
-<li>${project.build.directory} 构建目录，缺省为 target</li>
-<li>${project.build.outputDirectory} 构建过程输出目录，缺省为 target/classes</li>
-<li>${project.build.finalName} 产出物名称，缺省为<code>${project.artifactId}-${project.version}</code></li>
-<li>${project.packaging} 打包类型，缺省为 jar，</li>
-<li>${project.xxx} 当前pom文件的任意节点的内容。</li>
-</ul>
-
+        <p>maven 的常用命令和一些介绍，学习如何使用maven</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/11/30/maven-study/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/11/30/maven-study/" data-id="cjamalu3z00053cge88l48el5" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/11/30/maven-study/" data-id="cjamapjap00054gge2tgmech3" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/maven/">maven</a></li></ul>
@@ -194,7 +148,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/11/15/2017年Java面试题(基础)/" data-id="cjamalu3400003cge24z4s5wu" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/11/15/2017年Java面试题(基础)/" data-id="cjamapja900004ggejsjuvjg1" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
@@ -241,7 +195,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/11/14/interview_experience/" data-id="cjamalu3k00043cgemd5g8jww" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/11/14/interview_experience/" data-id="cjamapjap00044ggerjv2yd5m" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试/">面试</a></li></ul>
@@ -288,7 +242,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/11/10/redis-learning/" data-id="cjamalu3z000a3cgelc9m0sfe" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/11/10/redis-learning/" data-id="cjamapjap000b4ggevxe1m9xr" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/">redis</a></li></ul>
@@ -335,7 +289,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/11/10/工厂模式/" data-id="cjamalu4v00143cgeqqn4vybg" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/11/10/工厂模式/" data-id="cjamapjbk000y4ggefs9gozr8" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
@@ -382,7 +336,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/11/09/MySQL索引/" data-id="cjamalu3k00013cgeg2vr6ni6" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/11/09/MySQL索引/" data-id="cjamapjap00014gge246dm9jk" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
@@ -430,7 +384,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/10/24/mysqldump/" data-id="cjamalu3z00063cgem3a9uwyf" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/10/24/mysqldump/" data-id="cjamapjap00064ggesxcs3uon" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
@@ -477,7 +431,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/10/24/peewee入门/" data-id="cjamalu3z000b3cge1fv14kcc" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/10/24/peewee入门/" data-id="cjamapjap000a4ggeizbi8bv0" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ORM/">ORM</a></li></ul>
@@ -527,7 +481,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/10/12/singleton/" data-id="cjamalu4v00153cge8l60xfzw" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/10/12/singleton/" data-id="cjamapjbk00104gge5ttw96lw" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
@@ -574,7 +528,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/09/04/scrapy-爬虫/" data-id="cjamalu3z000f3cged2nj1nap" class="article-share-link">Share</a>
+      <a data-url="http://ljming.top/2017/09/04/scrapy-爬虫/" data-id="cjamapjbk000x4ggeufkr16u9" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
@@ -593,7 +547,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
     </div>
@@ -603,7 +557,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
     </div>
@@ -613,7 +567,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
       <a href="/tags/MySQL/" style="font-size: 20px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 10px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 20px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
     </div>
@@ -632,7 +586,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
         
@@ -669,7 +623,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 lijianmging<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
