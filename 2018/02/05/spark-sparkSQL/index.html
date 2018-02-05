@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   
-  <title>mysql 索引 | ljming的博客</title>
+  <title>spark SQL 编程入门 | ljming的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。">
-<meta name="keywords" content="MySQL">
+  <meta name="description" content="好久没有更新 java spark 学习了，今天趁着没什么事，把 sparkSQL 的学习补上。">
+<meta name="keywords" content="Spark">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mysql 索引">
-<meta property="og:url" content="http://ljming.top/2017/11/09/MySQL索引/index.html">
+<meta property="og:title" content="spark SQL 编程入门">
+<meta property="og:url" content="http://ljming.top/2018/02/05/spark-sparkSQL/index.html">
 <meta property="og:site_name" content="ljming的博客">
-<meta property="og:description" content="所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。">
+<meta property="og:description" content="好久没有更新 java spark 学习了，今天趁着没什么事，把 sparkSQL 的学习补上。">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2017-11-25T13:29:19.314Z">
+<meta property="og:updated_time" content="2018-02-05T10:57:26.485Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mysql 索引">
-<meta name="twitter:description" content="所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。">
+<meta name="twitter:title" content="spark SQL 编程入门">
+<meta name="twitter:description" content="好久没有更新 java spark 学习了，今天趁着没什么事，把 sparkSQL 的学习补上。">
   
     <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
   
@@ -69,14 +69,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-MySQL索引" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-spark-sparkSQL" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/11/09/MySQL索引/" class="article-date">
-  <time datetime="2017-11-09T08:30:00.000Z" itemprop="datePublished">2017-11-09</time>
+    <a href="/2018/02/05/spark-sparkSQL/" class="article-date">
+  <time datetime="2018-02-05T10:46:05.801Z" itemprop="datePublished">2018-02-05</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+    <a class="article-category-link" href="/categories/BigData/">BigData</a>
   </div>
 
   </div>
@@ -87,7 +87,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      mysql 索引
+      spark SQL 编程入门
     </h1>
   
 
@@ -95,43 +95,18 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。</p>
+        <p>好久没有更新 java spark 学习了，今天趁着没什么事，把 sparkSQL 的学习补上。</p>
 <a id="more"></a>
-<ul>
-<li>语法</li>
-</ul>
-<p>创建索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create [unique|fulltext|spatial] index index_name [using idex_type] on table_name(idex_col_name,....)</span><br></pre></td></tr></table></figure>
-<p>删除索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop index index_name on table_name;</span><br></pre></td></tr></table></figure>
-<h2 id="设计索引原则"><a href="#设计索引原则" class="headerlink" title="设计索引原则"></a>设计索引原则</h2><ul>
-<li>搜索的索引列，不一定是所要选择的列。最适合索引的列是出现在where字句中的列，或连接字句中指定的列，而不是出现在select关键字后的选择列表中的列。</li>
-<li>使用唯一索引。</li>
-<li>使用短索引。</li>
-<li>利用最左前缀。在创建一个n列的索引时，实际是创建了MySQL可利用的n个索引。多列索引可起几个索引的作用，因为可利用索引中最左边的列集来匹配行。这样的列集称为最左前缀。</li>
-<li>不要过度索引。每个额外的索引都要占用额外的磁盘空间，并降低写操作的性能。在修改表的内容时，索引必须进行更新，有时可能需要重构，因此索引越多，所花的时间越长如果一个索引很少利用或者从不使用，那么会不必要地减缓表的修改速度。</li>
-<li>对于InnoDB存储引擎的表，记录默认会按照一定的顺序保存，如果有明确定义的主键，则按照主键顺序保存。如果没有主键，但是有唯一索引，那么就是按照唯一索引的顺序保存。如果没有主键有没有唯一索引，那么表中会自动生成一个内部列， 按照这个列的顺序保存。按照主键或者内部列进行访问时最快的，所以InnoDB表尽量自己指定主键，当表中同时有几个列都是唯一的，都可以作为主键的时候，要选择最长作为访问条件的列作为主键，提高查询的效率。</li>
-</ul>
-<h2 id="BTREE索引和HASH索引"><a href="#BTREE索引和HASH索引" class="headerlink" title="BTREE索引和HASH索引"></a>BTREE索引和HASH索引</h2><p>两种不同的类型的索引各有其不同的适用范围，HASH索引有一些重要的特性需要在使用的时候特别注意。</p>
-<ul>
-<li>只用于使用=或者&lt;=&gt;操作符的等式比较。</li>
-<li>优化器不能使用HASH索引来加速ORDER BY操作。</li>
-<li>MySQL不能确定在两个值之间大约有多少行。如果将一个MyISAM表改为HASH索引的MEMORY表，会影响一些查询的执行效率。  </li>
-<li>只能使用整个关键字来搜索一行。</li>
-</ul>
-<p>而对BTREE索引，当使用<code>&lt;</code>,<code>&gt;</code>,<code>&gt;=</code>,<code>&lt;=</code>,<code>BETWEEN</code>,!=或者<code>&lt;&gt;</code>，或者LIKE ‘pattern’操作符时，都可以使用相关列上的索引。</p>
-<p>下列范围查询适合BTREE索引和HASH索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from table_name where key_col = 1 or key_col in (15, 18, 20);</span><br></pre></td></tr></table></figure>
-<p>下列范围查询只适用于BTRR索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from table_name where key_col &gt; 1 and key_col &lt; 10;</span><br><span class="line"></span><br><span class="line">select * from table_name like &apos;ab%&apos; or key_col between &apos;lisa&apos; and &apos;simon&apos;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> top.ljming.javaSparkLearn.sparkSQL;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.Dataset;</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.Row;</span><br><span class="line"><span class="keyword">import</span> org.apache.spark.sql.SparkSession;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.apache.spark.sql.functions.col;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SparkSQLExample</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SparkSession sparkSession = SparkSession.builder().appName(SparkSQLExample.class.getSimpleName()).master(<span class="string">"local"</span>).getOrCreate();</span><br><span class="line"></span><br><span class="line">        Dataset&lt;Row&gt; df = sparkSession.read().json(<span class="string">"D:\\lijiangming\\docs\\sparkLearn\\sparkSQLExample.json"</span>); <span class="comment">// local</span></span><br><span class="line">        System.out.println(<span class="string">"df.show() first call"</span>);</span><br><span class="line">        df.show();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 以树形结构打印 schema</span></span><br><span class="line">        df.printSchema();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 选择 `name` 列</span></span><br><span class="line">        System.out.println(<span class="string">"df.show() second call"</span>);</span><br><span class="line">        df.show();</span><br><span class="line">        df.select(<span class="string">"name"</span>).show();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 选择所有的数据，但对 `age` 列执行 +1</span></span><br><span class="line">        System.out.println(<span class="string">"df.show() third call"</span>);</span><br><span class="line">        df.show();</span><br><span class="line">        df.select(col(<span class="string">"name"</span>), col(<span class="string">"age"</span>).plus(<span class="number">1</span>)).show();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 选择 `age` 大于 21 的 people</span></span><br><span class="line">        df.select(col(<span class="string">"age"</span>).gt(<span class="number">21</span>)).show();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据 `age` 分组并计算</span></span><br><span class="line">        df.groupBy(<span class="string">"age"</span>).count().show();</span><br><span class="line"></span><br><span class="line">        sparkSession.stop();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在运行这个程序的时候，有个问题一直困扰这我，就是 <code>df.show()</code> 这个方法，我在 idea 里面执行时，总会出现 <code>java.lang.NoSuchMethodError: org.apache.spark.deploy.SparkHadoopUtil.getFSBytesReadOnThreadCallback()Lscala/Option;</code> 这个错。起初我也是 spark 版本的问题，现在换成了 2.2 版本还是一样。今天我把项目打成 jar 包，然后扔到我的阿里云服务器（部署好 spark 环境）上去，通过 spark-submit 的方式运行，跑到贼溜。然后，我回到本机，在 cmd 窗口以 spark-submit 的方式提交运行，和在服务器一样，跑的贼溜。WTF，还没搞清楚什么情况，初步猜测是 idea 设置的 spark 运行环境有问题。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ljming.top/2017/11/09/MySQL索引/" data-id="cjda3sa1p0001z0gel8maexu7" class="article-share-link">Partager</a>
+      <a data-url="http://ljming.top/2018/02/05/spark-sparkSQL/" data-id="cjda3sa440012z0gekyn169k9" class="article-share-link">Partager</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
 
     </footer>
   </div>
@@ -139,19 +114,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2017/11/10/工厂模式/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          Java设计模式之工厂模式
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/10/24/mysqldump/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/01/31/python-small-skills/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">how to back up and restore a mysql database</div>
+      <div class="article-nav-title">python 中的一些小技巧合集</div>
     </a>
   
 </nav>
