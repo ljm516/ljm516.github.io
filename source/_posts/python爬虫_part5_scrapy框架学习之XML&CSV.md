@@ -74,7 +74,7 @@ class MyxmlItem(scrapy.Item):
 
 
 名称 | 属性 or 方法 | 含义
----|---
+---|---|---|
 namespaces | 属性 | 以列表的形式存在，主要定义在文档中会被 spider 处理的可用命名空间
 adapt_response | 方法 | 该方法主要在 spider 分析响应 （Response）前被调用
 process_results(respon, results) | 方法 | 该方法主要在 spider 返回结果时被调用，主要对结果在返回前进行最后处理
