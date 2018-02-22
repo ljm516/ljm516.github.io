@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>python爬虫_part5_scrapy框架学习之处理不同格式文件 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用 XMLFeedSpider 处理 xml，使用 CSVFeedSpider 处理 csv。">
+<meta name="keywords" content="爬虫,scrapy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python爬虫_part5_scrapy框架学习之处理不同格式文件">
+<meta property="og:url" content="http://ljming.top/2018/02/22/python爬虫_part5_scrapy框架学习之XML&CSV/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="使用 XMLFeedSpider 处理 xml，使用 CSVFeedSpider 处理 csv。">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-02-22T13:37:59.976Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python爬虫_part5_scrapy框架学习之处理不同格式文件">
+<meta name="twitter:description" content="使用 XMLFeedSpider 处理 xml，使用 CSVFeedSpider 处理 csv。">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-python爬虫_part5_scrapy框架学习之XML&amp;CSV" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/02/22/python爬虫_part5_scrapy框架学习之XML&CSV/" class="article-date">
+  <time datetime="2018-02-22T14:00:00.000Z" itemprop="datePublished">2018-02-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/python/">python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      python爬虫_part5_scrapy框架学习之处理不同格式文件
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用 XMLFeedSpider 处理 xml，使用 CSVFeedSpider 处理 csv。</p>
+<a id="more"></a>
+<h3 id="用-XMLFeedSpider-分析-XML-源"><a href="#用-XMLFeedSpider-分析-XML-源" class="headerlink" title="用 XMLFeedSpider 分析 XML 源"></a>用 XMLFeedSpider 分析 XML 源</h3><p>如果想用 Scrapy 来处理 XML 文件，可以使用 XMLFeedSpider 去实现。</p>
+<p>首先运行 <code>scrapy startproject myxml</code> 创建一个分析 XML 文件的项目</p>
+<p>然后运行 <code>scrapy genspider -t xmlfeed myxmlspider baidu.com</code> 生成分析 XML 源的 spider 文件。</p>
+<p>myxmlspider.xml：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> scrapy.spiders <span class="keyword">import</span> XMLFeedSpider</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyxmlspiderSpider</span><span class="params">(XMLFeedSpider)</span>:</span></span><br><span class="line">    name = <span class="string">'myxmlspider'</span></span><br><span class="line">    allowed_domains = [<span class="string">'sina.com.cn'</span>]</span><br><span class="line">    start_urls = [<span class="string">'http://sina.com.cn/feed.xml'</span>]</span><br><span class="line">    iterator = <span class="string">'iternodes'</span> <span class="comment"># you can change this; see the docs</span></span><br><span class="line">    itertag = <span class="string">'item'</span> <span class="comment"># change it accordingly</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse_node</span><span class="params">(self, response, selector)</span>:</span></span><br><span class="line">        i = &#123;&#125;</span><br><span class="line">        <span class="comment">#i['url'] = selector.select('url').extract()</span></span><br><span class="line">        <span class="comment">#i['name'] = selector.select('name').extract()</span></span><br><span class="line">        <span class="comment">#i['description'] = selector.select('description').extract()</span></span><br><span class="line">        <span class="keyword">return</span> i</span><br></pre></td></tr></table></figure>
+<p>items.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Define here the models for your scraped items</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># See documentation in:</span></span><br><span class="line"><span class="comment"># https://doc.scrapy.org/en/latest/topics/items.html</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyxmlItem</span><span class="params">(scrapy.Item)</span>:</span></span><br><span class="line">    <span class="comment"># define the fields for your item here like:</span></span><br><span class="line">    name = scrapy.Field()</span><br><span class="line">    title = scrapy.Field()</span><br><span class="line">    link = scrapy.Field()</span><br><span class="line">    author = scrapy.Field()</span><br></pre></td></tr></table></figure>
+<p>代码分析：</p>
+<ul>
+<li>iterator: 使用哪个迭代器，默认为 <code>iternodes</code>, 还有其它诸如 <code>html</code>, <code>xml</code> 的迭代器。</li>
+<li>itertag: 主要用来设置开始迭代的节点</li>
+<li>parse_node： 该方法在节点与所提供的标签名相符合的时候会被调用。在方法中，可以进行一些信息的提取和处理操作。</li>
+</ul>
+<p>除此之外， XMLFeedSpider 还有一些常见的属性和方法</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>属性 or 方法</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>namespaces</td>
+<td>属性</td>
+<td>以列表的形式存在，主要定义在文档中会被 spider 处理的可用命名空间</td>
+</tr>
+<tr>
+<td>adapt_response</td>
+<td>方法</td>
+<td>该方法主要在 spider 分析响应 （Response）前被调用</td>
+</tr>
+<tr>
+<td>process_results(respon, results)</td>
+<td>方法</td>
+<td>该方法主要在 spider 返回结果时被调用，主要对结果在返回前进行最后处理</td>
+</tr>
+</tbody>
+</table>
+<p>接下来提取想要的信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> scrapy.spiders <span class="keyword">import</span> XMLFeedSpider</span><br><span class="line"><span class="keyword">from</span> myxml.items <span class="keyword">import</span> MyxmlItem</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyxmlspiderSpider</span><span class="params">(XMLFeedSpider)</span>:</span></span><br><span class="line">    name = <span class="string">'myxmlspider'</span></span><br><span class="line">    allowed_domains = [<span class="string">'sina.com.cn'</span>]</span><br><span class="line">    <span class="comment"># xml 源地址</span></span><br><span class="line">    start_urls = [<span class="string">'http://blog.sina.com.cn/rss/1615888477.xml'</span>]</span><br><span class="line">    </span><br><span class="line">    iterator = <span class="string">'iternodes'</span> <span class="comment"># you can change this; see the docs</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 开始迭代的节点</span></span><br><span class="line">    itertag = <span class="string">'rss'</span> <span class="comment"># change it accordingly</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse_node</span><span class="params">(self, response, selector)</span>:</span></span><br><span class="line">        i = MyxmlItem()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用 Xpath 表达式将对应信息提取处理，并存储到对应的 item 中</span></span><br><span class="line">        i[<span class="string">'title'</span>] = selector.select(<span class="string">'/rss/channel/item/title/text()'</span>).extract()</span><br><span class="line">        i[<span class="string">'link'</span>] = selector.select(<span class="string">'/rss/channel/item/link/text()'</span>).extract()</span><br><span class="line">        i[<span class="string">'author'</span>] = selector.select(<span class="string">'/rss/channel/item/author/text()'</span>).extract()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 通过 for 循环以此遍历提取出来存在 item 中的信息并输出</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(len(i[<span class="string">'title'</span>])):</span><br><span class="line">            print(<span class="string">'第'</span> + str(j+<span class="number">1</span>) + <span class="string">'篇文章'</span>)</span><br><span class="line">            print(<span class="string">'标题:'</span>, i[<span class="string">'title'</span>][j])</span><br><span class="line">            print(<span class="string">'对应的链接: '</span>, i[<span class="string">'link'</span>][j])</span><br><span class="line">            print(<span class="string">'对应的作者: '</span>, i[<span class="string">'author'</span>][j])</span><br><span class="line"></span><br><span class="line">            print(<span class="string">'---------------------------------------'</span>)</span><br><span class="line">        <span class="keyword">return</span> i</span><br></pre></td></tr></table></figure>
+<h3 id="学会使用-CSVFeedSpider"><a href="#学会使用-CSVFeedSpider" class="headerlink" title="学会使用 CSVFeedSpider"></a>学会使用 CSVFeedSpider</h3><ul>
+<li><p>scrapy startproject mycsv<br>生成 mycsv 的处理 csv 文件的项目</p>
+</li>
+<li><p>scrapy genspider -t csvfeed mycsvspider iqianyue.com<br>以 csvfedd 为模板，生成 mycsvfeedspider.py, 指定 allowed_domains 为 iqianyue.com</p>
+</li>
+<li><p>items.py</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Define here the models for your scraped items</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># See documentation in:</span></span><br><span class="line"><span class="comment"># https://doc.scrapy.org/en/latest/topics/items.html</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MycsvItem</span><span class="params">(scrapy.Item)</span>:</span></span><br><span class="line">    <span class="comment"># define the fields for your item here like:</span></span><br><span class="line">    <span class="comment"># name = scrapy.Field()</span></span><br><span class="line">    name = scrapy.Field()</span><br><span class="line">    sex = scrapy.Field()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>mycsvspider.py</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> scrapy.spiders <span class="keyword">import</span> CSVFeedSpider</span><br><span class="line"><span class="keyword">from</span> mycsv.items <span class="keyword">import</span> MycsvItem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MycsvspiderSpider</span><span class="params">(CSVFeedSpider)</span>:</span></span><br><span class="line">    name = <span class="string">'mycsvspider'</span></span><br><span class="line">    allowed_domains = [<span class="string">'iqianyue.com'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义要处理的 csv 文件所在地址</span></span><br><span class="line">    start_urls = [<span class="string">'http://yum.iqianyue.com/weisuenbook/pyspd/part12/mydata.csv'</span>]</span><br><span class="line">    <span class="comment"># 定义 header</span></span><br><span class="line">    headers = [<span class="string">'name'</span>, <span class="string">'sex'</span>, <span class="string">'addr'</span>, <span class="string">'email'</span>]</span><br><span class="line">    <span class="comment"># 定义 分隔符</span></span><br><span class="line">    delimiter = <span class="string">','</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Do any adaptations you need here</span></span><br><span class="line">    <span class="comment">#def adapt_response(self, response):</span></span><br><span class="line">    <span class="comment">#    return response</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse_row</span><span class="params">(self, response, row)</span>:</span></span><br><span class="line">        i = MycsvItem()</span><br><span class="line">        </span><br><span class="line">        i[<span class="string">'name'</span>] = row[<span class="string">'name'</span>].encode()</span><br><span class="line">        i[<span class="string">'sex'</span>] = row[<span class="string">'sex'</span>].encode()</span><br><span class="line"></span><br><span class="line">        print(<span class="string">'name: '</span>, i[<span class="string">'name'</span>], <span class="string">' sex: '</span>, i[<span class="string">'sex'</span>])</span><br><span class="line">        print(<span class="string">'---------------------------------------'</span>)</span><br><span class="line">        <span class="keyword">return</span> i</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ljming.top/2018/02/22/python爬虫_part5_scrapy框架学习之XML&CSV/" data-id="cjdyk1uwp000n8wgeb32fubqb" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/02/05/spark-sparkSQL/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">spark SQL 编程入门</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 12.5px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/Spark/" style="font-size: 15px;">Spark</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 17.5px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/02/22/python爬虫_part5_scrapy框架学习之XML&CSV/">python爬虫_part5_scrapy框架学习之处理不同格式文件</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/05/spark-sparkSQL/">spark SQL 编程入门</a>
+          </li>
+        
+          <li>
+            <a href="/2018/01/31/python-small-skills/">python 中的一些小技巧合集</a>
+          </li>
+        
+          <li>
+            <a href="/2018/01/21/python爬虫_part4_scrapy框架学习之进阶/">python爬虫_part4_scrapy框架学习之进阶</a>
+          </li>
+        
+          <li>
+            <a href="/2018/01/16/python-excel/">python 处理 execl 文件</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 lijianmging<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
