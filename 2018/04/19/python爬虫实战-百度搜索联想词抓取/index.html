@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>python 爬虫实战之-百度联想词抓取 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我们都有这样的经历，在百度搜索输入框输入想要搜索的词时，输入框下面会出现百度联想推荐搜索词。这里就是想抓取这部分的词。">
+<meta name="keywords" content="爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python 爬虫实战之-百度联想词抓取">
+<meta property="og:url" content="http://ljming.top/2018/04/19/python爬虫实战-百度搜索联想词抓取/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="我们都有这样的经历，在百度搜索输入框输入想要搜索的词时，输入框下面会出现百度联想推荐搜索词。这里就是想抓取这部分的词。">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-04-19T07:04:00.128Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python 爬虫实战之-百度联想词抓取">
+<meta name="twitter:description" content="我们都有这样的经历，在百度搜索输入框输入想要搜索的词时，输入框下面会出现百度联想推荐搜索词。这里就是想抓取这部分的词。">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-python爬虫实战-百度搜索联想词抓取" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/" class="article-date">
+  <time datetime="2018-04-19T06:35:00.000Z" itemprop="datePublished">2018-04-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/python/">python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      python 爬虫实战之-百度联想词抓取
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们都有这样的经历，在百度搜索输入框输入想要搜索的词时，输入框下面会出现百度联想推荐搜索词。这里就是想抓取这部分的词。</p>
+<a id="more"></a>
+<p>在浏览器输入 <code>www.baidu.com</code>。 打开 chrome 浏览的检查界面，选择 Network，当在百度搜索输入框中输入词时，可以看到 network 中出现了一个网络请求，这个请求会返回百度联想推荐搜索词。我们可以发现，这个请求的 url 是这样的: <code>https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=&amp;json=1&amp;p=3&amp;sid=1428_21113_18559_20927&amp;req=2&amp;sc=eb&amp;csor=0&amp;pwd=aa&amp;cb=jQuery110207135102943980893_1524119759664&amp;_=1524119759667</code>。然后我去除不需要的部分，提取出基础的请求 url <code>https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=</code>。 这个 url 后面加上要搜索的词，就可以获取推荐词。</p>
+<p>现在我们就编码实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">BASE_REQUEST_URL = <span class="string">'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd='</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建请求头的部分，可以网上找些内容，这里随机获取构建请求头，避免请求次数过多被屏蔽</span></span><br><span class="line">ACCEPT = [</span><br><span class="line">    <span class="string">'text/html'</span>,</span><br><span class="line">    <span class="string">'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">ACCEPT_ENCODING = [</span><br><span class="line">    <span class="string">'gzip, deflate'</span>,</span><br><span class="line">    <span class="string">'gzip, deflate, compress'</span>,</span><br><span class="line">    <span class="string">'gzip,deflate,sdch'</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">ACCEPT_LANGUAGE = [</span><br><span class="line">    <span class="string">"en-us"</span>,</span><br><span class="line">    <span class="string">"en-uk"</span>,</span><br><span class="line">    <span class="string">"en,de;q=0.8,de-de;q=0.5,en-us;q=0.3"</span>,</span><br><span class="line">    <span class="string">"en,de;q=0.8,de-at;q=0.5,en-uk;q=0.3"</span>,</span><br><span class="line">    <span class="string">"en-US,en;q=0.8"</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">USER_AGENTS = [</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9) AppleWebKit/537.71 (KHTML, like Gecko) Version/7.0 Safari/537.71"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:24.0) Gecko/20100101 Firefox/24.0"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/4.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/5.0)"</span>,</span><br><span class="line"></span><br><span class="line">    <span class="string">"Mozilla/1.22 (compatible; MSIE 10.0; Windows 3.1)"</span></span><br><span class="line"></span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_random</span><span class="params">(array)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> array[random.randrange(<span class="number">0</span>, len(array))]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_header</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="string">'User-Agent'</span>: get_random(USER_AGENTS),</span><br><span class="line"></span><br><span class="line">        <span class="string">'Connection'</span>: <span class="string">'Keep-Alive'</span>,</span><br><span class="line"></span><br><span class="line">        <span class="string">'Accept-Language'</span>: get_random(ACCEPT_LANGUAGE),</span><br><span class="line"></span><br><span class="line">        <span class="string">'Accept-Encoding'</span>: get_random(ACCEPT_ENCODING),</span><br><span class="line"></span><br><span class="line">        <span class="string">'Accept'</span>: get_random(ACCEPT)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">spider</span><span class="params">()</span>:</span></span><br><span class="line">    request_header = <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> keyword <span class="keyword">in</span> source_keyword_list:</span><br><span class="line">        request_url = BASE_REQUEST_URL + keyword</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> request_header:</span><br><span class="line">            request_header = get_header()</span><br><span class="line"></span><br><span class="line">        rsp = requests.get(request_url, headers=request_header)</span><br><span class="line">        print(<span class="string">'request status_code: &#123;code&#125;'</span>.format(code=rsp.status_code))</span><br><span class="line"></span><br><span class="line">        text = rsp.text</span><br><span class="line">        get_imagination_keyword(text=text, source_keyword=keyword)</span><br></pre></td></tr></table></figure>
+<p><code>spider()</code> 方法请求了那个 url，例如我们搜索 NBA，那么请求的 url 将会是这样 <code>https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=NBA</code>，响应返回一个字符串，字符串内容是: <code>window.baidu.sug({q:&quot;nba&quot;,p:false,s:[&quot;nba直播&quot;,&quot;nba直播吧&quot;,&quot;nba录像&quot;,&quot;nba2k online&quot;,&quot;nba2k17&quot;,&quot;nba98&quot;,&quot;nba数据&quot;,&quot;nba排名&quot;,&quot;nba历史得分榜&quot;,&quot;nba回放&quot;]});</code>。 那么我们就来解析这个字符串，获取里面的词。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_imagination_keyword</span><span class="params">(text, source_keyword)</span>:</span></span><br><span class="line">    print(<span class="string">'return text: &#123;text&#125;'</span>.format(text=text))</span><br><span class="line"></span><br><span class="line">    result = re.compile(<span class="string">'(\[.*?\])'</span>).findall(text)[<span class="number">0</span>]</span><br><span class="line">    json_result = json.loads(result)</span><br><span class="line">    print(<span class="string">'&#123;source keyword&#125;, result: &#123;r&#125;'</span>.format(r=json_result))</span><br></pre></td></tr></table></figure>
+<p><code>(\[.*?\])</code> 这个正则就可以匹配除字符串中 <code>[]</code> 的内容，即我们想要的词。这就大功告成，相当简单。 </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ljming.top/2018/04/19/python爬虫实战-百度搜索联想词抓取/" data-id="cjg66k3rr001300gekkgthqir" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">python爬虫_part6_scrapy架构学习</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 12.5px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/Spark/" style="font-size: 15px;">Spark</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 17.5px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/">python 爬虫实战之-百度联想词抓取</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/">python爬虫_part6_scrapy架构学习</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/22/python爬虫_part5_scrapy框架学习之XML&CSV/">python爬虫_part5_scrapy框架学习之处理不同格式文件</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/05/spark-sparkSQL/">spark SQL 编程入门</a>
+          </li>
+        
+          <li>
+            <a href="/2018/01/31/python-small-skills/">python 中的一些小技巧合集</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
