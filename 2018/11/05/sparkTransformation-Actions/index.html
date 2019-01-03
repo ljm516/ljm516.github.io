@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>spark transformation 和 actions 操作 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="基于 Java 的 Spark 常用转换 Transformations 操作; 本地模式。">
+<meta name="keywords" content="Spark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spark transformation 和 actions 操作">
+<meta property="og:url" content="http://ljming.top/2018/11/05/sparkTransformation-Actions/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="基于 Java 的 Spark 常用转换 Transformations 操作; 本地模式。">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-11-05T15:22:52.623Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spark transformation 和 actions 操作">
+<meta name="twitter:description" content="基于 Java 的 Spark 常用转换 Transformations 操作; 本地模式。">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-sparkTransformation-Actions" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/11/05/sparkTransformation-Actions/" class="article-date">
+  <time datetime="2018-11-05T15:22:52.623Z" itemprop="datePublished">2018-11-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/BigData/">BigData</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      spark transformation 和 actions 操作
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>基于 Java 的 Spark 常用转换 Transformations 操作; 本地模式。</p>
+<a id="more"></a>
+<h2 id="main-函数"><a href="#main-函数" class="headerlink" title="main 函数"></a>main 函数</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaSparkApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化 SparkContext</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> JavaSparkContext <span class="title">initJavaSparkContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        SparkConf conf = <span class="keyword">new</span> SparkConf().setAppName(<span class="string">"SparkTransformationApplication"</span>).setMaster(<span class="string">"local[2]"</span>);</span><br><span class="line">        JavaSparkContext sc = <span class="keyword">new</span> JavaSparkContext(conf);</span><br><span class="line">        <span class="keyword">return</span> sc;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        JavaSparkContext sc = initJavaSparkContext();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 测试 spark transformation 操作</span></span><br><span class="line">        runSparkTransformation(sc);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 测试 spark actions 操作</span></span><br><span class="line">        runSparkActions(sc);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">runSparkTransformation</span><span class="params">(JavaSparkContext sc)</span> </span>&#123;</span><br><span class="line">        JavaRDD&lt;String&gt; lines = sc.textFile(<span class="string">"本地文件"</span>);</span><br><span class="line">        SparkTransformation.sprakTransformations(lines);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">runSparkActions</span><span class="params">(JavaSparkContext sc)</span> </span>&#123;</span><br><span class="line">        JavaRDD&lt;String&gt; lines = sc.textFile(<span class="string">"本地文件"</span>);</span><br><span class="line">        SparkActions.sparkActions(lines);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="SparkTransformation-java"><a href="#SparkTransformation-java" class="headerlink" title="SparkTransformation.java"></a>SparkTransformation.java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SparkTransformation</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sprakTransformations</span><span class="params">(JavaRDD&lt;String&gt; lines)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        mapTransformation(lines).foreach(lineLength -&gt; System.out.println(lineLength));</span><br><span class="line"></span><br><span class="line">        JavaRDD&lt;LogInfo&gt; logJavaRDD = lines.map(<span class="keyword">new</span> Function&lt;String, LogInfo&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> LogInfo <span class="title">call</span><span class="params">(String s)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                JSONObject jObj = JSONObject.parseObject(s);</span><br><span class="line">                <span class="keyword">return</span> LearnUtils.buildLogInfo(jObj);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        JavaPairRDD&lt;String, LogInfo&gt; pairJavaRDD = pairRddTransformation(logJavaRDD);</span><br><span class="line">        pairJavaRDD.foreach(pairJavaRdd -&gt; System.out.println(pairJavaRdd));</span><br><span class="line"></span><br><span class="line">        JavaPairRDD&lt;String, Iterable&lt;LogInfo&gt;&gt; key2ListPairRDD = groupPairRddByKey(pairJavaRDD);</span><br><span class="line">                    key2ListPairRDD.foreach(tuple -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">"key: "</span> + tuple._1());</span><br><span class="line">            tuple._2().forEach(logInfo -&gt; System.out.println(logInfo));</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        JavaPairRDD&lt;String, LogInfo&gt; reducedPairJavaRDD = reduceByKey(pairJavaRDD);</span><br><span class="line">        reducedPairJavaRDD.foreach(tuple -&gt; System.out.println(tuple._1() + tuple._2()));</span><br><span class="line"></span><br><span class="line">        List&lt;Tuple2&lt;String, LogInfo&gt;&gt; sortedPairRDDList = sortByKey(pairJavaRDD);</span><br><span class="line">        sortedPairRDDList.forEach(tuple -&gt; System.out.println(tuple._1() + tuple._2()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * map 转化：将数据集的每个元素按照指定的函数转换成一个新的 RDD</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> lines</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> JavaRDD&lt;Integer&gt; <span class="title">mapTransformation</span><span class="params">(JavaRDD&lt;String&gt; lines)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> lines.map(String::length);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将 logJavaRdd 做一个&lt;k, v&gt; 映射</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> logJavaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> JavaPairRDD&lt;String, LogInfo&gt; <span class="title">pairRddTransformation</span><span class="params">(JavaRDD&lt;LogInfo&gt; logJavaRDD)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> logJavaRDD.mapToPair(logInfo -&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Tuple2&lt;&gt;(logInfo.getDistinctId(), logInfo);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对有相同 key 的元素进行分组操作</span></span><br><span class="line"><span class="comment">     * 将 pairJavaRDD 按 K 分组</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> JavaPairRDD&lt;String, Iterable&lt;LogInfo&gt;&gt; groupPairRddByKey(JavaPairRDD&lt;String, LogInfo&gt; pairJavaRDD) &#123;</span><br><span class="line">        JavaPairRDD&lt;String, Iterable&lt;LogInfo&gt;&gt; key2ListPairRDD = pairJavaRDD.groupByKey();</span><br><span class="line">        <span class="keyword">return</span> key2ListPairRDD;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对有相同 key 的元素根据指定的函数进行聚合操作，返回 JavaPairRDD&lt;K, V&gt;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> pairJavaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> JavaPairRDD&lt;String, LogInfo&gt; <span class="title">reduceByKey</span><span class="params">(JavaPairRDD&lt;String, LogInfo&gt; pairJavaRDD)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> pairJavaRDD.reduceByKey(<span class="keyword">new</span> Function2&lt;LogInfo, LogInfo, LogInfo&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> LogInfo <span class="title">call</span><span class="params">(LogInfo logInfo, LogInfo logInfo2)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> logInfo;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据 key 排序，并返回最终结果 List&lt;Tuple2&lt;K, V&gt;&gt;</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> pairJavaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;Tuple2&lt;String, LogInfo&gt;&gt; sortByKey(JavaPairRDD&lt;String, LogInfo&gt; pairJavaRDD) &#123;</span><br><span class="line">        <span class="keyword">return</span> pairJavaRDD.sortByKey().collect();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="SparkActions-java"><a href="#SparkActions-java" class="headerlink" title="SparkActions.java"></a>SparkActions.java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SparkActions</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sparkActions</span><span class="params">(JavaRDD&lt;String&gt; javaRDD)</span> </span>&#123;</span><br><span class="line">        javaRDD.map(String::length).foreach(length -&gt; System.out.println(length));</span><br><span class="line"></span><br><span class="line">        String longerLog = sparkActionsReduce(javaRDD);</span><br><span class="line">        System.out.println(<span class="string">"最长的日志长度: "</span> + longerLog.length());</span><br><span class="line"></span><br><span class="line">        List&lt;String&gt; logString = sparkActionsCollect(javaRDD);</span><br><span class="line">        System.out.println(<span class="string">"数据集中共有 "</span> + logString.size() + <span class="string">" 个元素"</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"数据集中有: "</span> + sparkActionsCount(javaRDD) + <span class="string">" 个元素"</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"随机抽样的数据: "</span>);</span><br><span class="line">        sparkTakeSample(javaRDD).forEach(log -&gt; System.out.println(log));</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"排序后前 n 个数据"</span>);</span><br><span class="line">        sparkTakeOrdered(javaRDD).forEach(log -&gt; System.out.println(log.length()));</span><br><span class="line"></span><br><span class="line">        String filePath = <span class="string">"要写入的文件路径"</span>;</span><br><span class="line"></span><br><span class="line">        sparkActionSaveAsTextFile(javaRDD, filePath);</span><br><span class="line"></span><br><span class="line">        sparkActionsSaveAsObjectFile(javaRDD, filePath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用函数 func 聚合数据集中的元素，这个函数 func 输入为两个元素，返回为一个元素。</span></span><br><span class="line"><span class="comment">     * 这个函数应该是可交换（commutative ）和关联（associative）的，这样才能保证它可以被并行地正确计算。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> javaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">sparkActionsReduce</span><span class="params">(JavaRDD&lt;String&gt; javaRDD)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> javaRDD.reduce(<span class="keyword">new</span> Function2&lt;String, String, String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">(String s, String s2)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (s.length() &gt; s2.length()) &#123;</span><br><span class="line">                    <span class="keyword">return</span> s;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">return</span> s2;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 以 List 形式返回数据集中的所有元素。</span></span><br><span class="line"><span class="comment">     * 通常用于 filter 或者其它返回足够少数据的操作</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> javaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">sparkActionsCollect</span><span class="params">(JavaRDD&lt;String&gt; javaRDD)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> javaRDD.collect();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回数据集中的元素个数</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> javaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">sparkActionsCount</span><span class="params">(JavaRDD&lt;String&gt; javaRDD)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> javaRDD.count();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取数据集中的数据；</span></span><br><span class="line"><span class="comment">     * first() 获取第一个，类似于 take(1)</span></span><br><span class="line"><span class="comment">     * take(int n) 取出前 n 个数。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> javaRDD</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sparkActionsGetItem</span><span class="params">(JavaRDD&lt;String&gt; javaRDD)</span> </span>&#123;</span><br><span class="line">        String first = javaRDD.first(); <span class="comment">// 取出数据集中的第一个元素</span></span><br><span class="line">        List&lt;String&gt; logList = javaRDD.take(<span class="number">6</span>); <span class="comment">// 取出数据集中的前 n 个元素</span></span><br><span class="line"></span><br><span class="line">        System.out.println(first + logList.size());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对数据集进行随机抽样</span></span><br><span class="line"><span class="comment">     * boolean withReplacement: 是否用随机数进行替换</span></span><br><span class="line"><span class="comment">     * int num: 随机抽取个数</span></span><br><span class="line"><span class="comment">     * long seed: 指定随机数生成器</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> javaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">sparkTakeSample</span><span class="params">(JavaRDD&lt;String&gt; javaRDD)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> javaRDD.takeSample(<span class="keyword">true</span>, <span class="number">5</span>, <span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回数据集中经过排序的前 n 个元素</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> javaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">sparkTakeOrdered</span><span class="params">(JavaRDD&lt;String&gt; javaRDD)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> javaRDD.takeOrdered(<span class="number">5</span>, <span class="keyword">new</span> Comparator&lt;String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(String o1, String o2)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> o1.length() - (o2.length());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将数据集中的元素以文本形式保存到指定的本地文件系统、HDFS 或其他 Hadoop 支持的文件系统</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> javaRDD</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> path</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sparkActionSaveAsTextFile</span><span class="params">(JavaRDD&lt;String&gt; javaRDD, String path)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"将数据集中的元素以文本文件的形式写入本地文件系统"</span>);</span><br><span class="line">        javaRDD.saveAsTextFile(path + <span class="string">"log.txt"</span>); <span class="comment">//并不是一个 txt 格式的文件，而是一个文件夹</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sparkActionsSaveAsObjectFile</span><span class="params">(JavaRDD&lt;String&gt; javaRDD, String path)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"将数据集中的元素以 Java 序列化的形式写入本地文件系统"</span>);</span><br><span class="line">        javaRDD.saveAsObjectFile(path + <span class="string">"log.json"</span>); <span class="comment">// 并不是一个 json 格式的文件，而是一个文件夹</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="LogInfo-java"><a href="#LogInfo-java" class="headerlink" title="LogInfo.java"></a>LogInfo.java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogInfo</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一些属性和 getter、setter、toString</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Utils-java"><a href="#Utils-java" class="headerlink" title="Utils.java"></a>Utils.java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LogInfo <span class="title">buildLogInfo</span><span class="params">(JSONObject jObj)</span> </span>&#123;</span><br><span class="line">    LogInfo logInfo = <span class="keyword">new</span> LogInfo();</span><br><span class="line">    <span class="comment">// 解析 json， 给 logInfo 对象塞值....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ljming.top/2018/11/05/sparkTransformation-Actions/" data-id="cjq7sqp1t002c375sy5okmfrr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/28/rocketmq之broker源码学习/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          rocketmq之broker源码学习
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/11/05/spark-sparkSQL/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">spark SQL 编程入门</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 12.5px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 10px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 15px;">Spark</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 17.5px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/rocketmq之broker源码学习/">rocketmq之broker源码学习</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/sparkTransformation-Actions/">spark transformation 和 actions 操作</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/spark-sparkSQL/">spark SQL 编程入门</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/">python 爬虫实战之-百度联想词抓取</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/">python爬虫_part6_scrapy架构学习</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

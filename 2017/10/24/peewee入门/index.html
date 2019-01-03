@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>peewee入门 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="peewee quick start摘要peewee是python ORM的一个框架。">
+<meta name="keywords" content="ORM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="peewee入门">
+<meta property="og:url" content="http://ljming.top/2017/10/24/peewee入门/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="peewee quick start摘要peewee是python ORM的一个框架。">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-11-05T15:22:52.615Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="peewee入门">
+<meta name="twitter:description" content="peewee quick start摘要peewee是python ORM的一个框架。">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-peewee入门" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/24/peewee入门/" class="article-date">
+  <time datetime="2017-10-24T01:39:00.000Z" itemprop="datePublished">2017-10-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      peewee入门
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="peewee-quick-start"><a href="#peewee-quick-start" class="headerlink" title="peewee quick start"></a>peewee quick start</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>peewee是python ORM的一个框架。</p>
+<a id="more"></a>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
+<li>使用pip直接安装最新版本</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install peewee</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用git安装</li>
+</ul>
+<p>项目的地址： <a href="https://github.com/coleifer/peewee" target="_blank" rel="noopener">https://github.com/coleifer/peewee</a> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/coleifer/peewee</span><br><span class="line">cd peewee</span><br><span class="line">python setup.py install</span><br></pre></td></tr></table></figure>
+<h3 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h3><p>本编文档为peewee主要功能做了一个简明的、高水准的概述，目录包含：</p>
+<ul>
+<li>模块定义</li>
+<li>存储数据</li>
+<li>检索数据</li>
+</ul>
+<h4 id="模块定义"><a href="#模块定义" class="headerlink" title="模块定义"></a>模块定义</h4><p>Model classes, fields and model instances 都映射了数据库的概念：</p>
+<table>
+<thead>
+<tr>
+<th>Thing</th>
+<th>Corresponds to database</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modelclasses</td>
+<td>db table</td>
+</tr>
+<tr>
+<td>fields</td>
+<td>table column</td>
+</tr>
+<tr>
+<td>model instance</td>
+<td>Row in table</td>
+</tr>
+</tbody>
+</table>
+<p>当使用peewee开始一个项目时，一贯最好的方式就是从数据模型开始，通过定义一个或多个模型类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peewee <span class="keyword">import</span> *</span><br><span class="line">db = SqliteDatabase(<span class="string">'people.db'</span>)</span><br><span class="line">clss Person(Model):</span><br><span class="line">    name = CharFiled()</span><br><span class="line">    birthday = DateFiled()</span><br><span class="line">    is_relative = BooleanFiled()</span><br><span class="line">    </span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        database = db</span><br></pre></td></tr></table></figure>
+<p>这里提供了很多类型的field，以便适合存储不同类型的数据。peewee处理器可以将python里的数值类型转换为数据库中的数据类型，因此，您可以在代码中使用Python类型，而不必担心</p>
+<p>当我们用外键给model之间建立起联系后，事情就开始变得有趣了。<br>在peewee中可以轻松是实现:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pets</span><span class="params">(Model)</span>:</span></span><br><span class="line">    owner = ForeignKeyField(Person,related_name=<span class="string">'pets'</span>)</span><br><span class="line">    name = CharField()</span><br><span class="line">    animal_type = CharField()</span><br><span class="line">    </span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        database = db</span><br></pre></td></tr></table></figure>
+<p>既然我们有自己的model，那就让它们和数据库关联起来吧。虽然没有必要显式地打开连接，这是一个很好的做法，因为它会立即显示您的数据库连接的任何错误，与第一次查询执行后的任意时间不同。完成后关闭连接也是很好的–例如，一个web app当接收一个请求时要打开数据库连接，响应时要关闭连接。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.connect()</span><br></pre></td></tr></table></figure>
+<p>首先，我们将在数据库中创建存储数据的表。这将创建具有适当列、索引、序列和外键约束的表。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.create_tables([People,pets])</span><br></pre></td></tr></table></figure>
+<h4 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h4><p>首先，我们用一些people对象填充数据库吧。可以使用save()和create()方法添加和更新people记录</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> date</span><br><span class="line">uncle_bob = Person(name=<span class="string">'Bob'</span>,birthday=date(<span class="number">1960</span>,<span class="number">1</span>,<span class="number">15</span>),is_relative = <span class="keyword">True</span>)</span><br><span class="line">uncle_bob.save()</span><br></pre></td></tr></table></figure>
+<p>调用save()方法后，修改记录的记录数将被返回</p>
+<p>你也可以使用create()方法添加一条person记录，它返回的是一个person实例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grandma = Person.create(name=<span class="string">'Grandma'</span>, birthday=date(<span class="number">1935</span>, <span class="number">3</span>, <span class="number">1</span>), is_relative=<span class="keyword">True</span>)</span><br><span class="line">herb = Person.create(name=<span class="string">'Herb'</span>, birthday=date(<span class="number">1950</span>, <span class="number">5</span>, <span class="number">5</span>), is_relative=<span class="keyword">False</span>)</span><br></pre></td></tr></table></figure>
+<p>更新，修改实例可以调用save()方法做持久化的修改，现在修改Grandma的名字，然后保存在数据库中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grandma.name = <span class="string">'Grandma L'</span></span><br><span class="line">grandma.save()</span><br></pre></td></tr></table></figure>
+<p>现在有三条people记录在数据库中，那开始添加一个pets吧，Grandma不喜欢屋子里有动物，所以她不需要，单数Herb是一个动物爱好者</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bob_kitty = Pet.create(owner=uncle_bob, name=<span class="string">'Kitty'</span>, animal_type=<span class="string">'cat'</span>)</span><br><span class="line">herb_fido = Pet.create(owner=herb, name=<span class="string">'Fido'</span>, animal_type=<span class="string">'dog'</span>)</span><br><span class="line">herb_mittens = Pet.create(owner=herb, name=<span class="string">'Mittens'</span>, animal_type=<span class="string">'cat'</span>)</span><br><span class="line">herb_mittens_jr = Pet.create(owner=herb, name=<span class="string">'Mittens Jr'</span>, animal_type=<span class="string">'cat'</span>)</span><br></pre></td></tr></table></figure>
+<p>经过一段漫长的生命周期，Mittens 生病了，然后就挂了。现在需要将它从数据库中删除。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">herb_mittents.delete_instance()</span><br></pre></td></tr></table></figure>
+<p>delete_instance()方法的返回值是数据库中被删除的记录数</p>
+<h4 id="数据检索"><a href="#数据检索" class="headerlink" title="数据检索"></a>数据检索</h4><p>数据库的好处就是它允许我们使用查询语句检索数据，关系型数据库非常适合做<a href="https://en.wikipedia.org/wiki/Ad_hoc" target="_blank" rel="noopener">即席查询</a></p>
+<h5 id="获取单条数据"><a href="#获取单条数据" class="headerlink" title="获取单条数据"></a>获取单条数据</h5><p>在库里检索Grandma’s的记录，为了获取一条记录，使用SelectQuery.get()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grandma = Person.select().where(Person.name == &apos;Grandma L&apos;).get()</span><br></pre></td></tr></table></figure>
+<p>我们也可以使用等效速记法Model.get()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grandma = Person.get(Person.name == &apos;Grandma L&apos;)</span><br></pre></td></tr></table></figure>
+<h5 id="获取多条记录"><a href="#获取多条记录" class="headerlink" title="获取多条记录"></a>获取多条记录</h5><p>列出所有person的名字</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> person <span class="keyword">in</span> Person.select():</span><br><span class="line">   <span class="keyword">print</span> person.name,person.relative</span><br></pre></td></tr></table></figure>
+<p>列出所有的cat和它们owner的名字</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">query = Pet.select().where(Pet.animal_type = <span class="string">'cat'</span>)</span><br><span class="line"><span class="keyword">for</span> cat <span class="keyword">in</span> query:</span><br><span class="line">    <span class="keyword">print</span> cat.name,cat.owner.name</span><br></pre></td></tr></table></figure>
+<p>上面的查询有一个很大的问题，因为我们访问pet.owner.name时，我们没有在原始查询中获取此值，pewwee就不得不再做一次查询，来获取pet的owner。这种行为被称作N+1,通常是要被避免的。</p>
+<p>我们可以避免这种额外的查询，通过使用join同时查询pet和person</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">query = Pet.select(Pet,Person).join(person).where(Pet.animal_type == <span class="string">'cat'</span>)</span><br><span class="line"><span class="keyword">for</span> pet <span class="keyword">in</span> query:</span><br><span class="line">    <span class="keyword">print</span> pet.name ,pet.owner.name</span><br></pre></td></tr></table></figure>
+<p>现在我们获取Bob的所有宠物</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> pet <span class="keyword">in</span> Pet.select().join(Person).where(Person.name == <span class="string">'Bob'</span>)</span><br><span class="line">    <span class="keyword">print</span> pet.name</span><br></pre></td></tr></table></figure>
+<p>我们可以在这里做另一件很酷的事来得到Bob的宠物。既然我们已经有一个对象来代表Bob，我们可以这样做</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> pet <span class="keyword">in</span> Pet.select().where(Pet.ower == uncle_bob)</span><br><span class="line">    <span class="keyword">print</span> pet.name</span><br></pre></td></tr></table></figure>
+<p>为了让这些数据按字母排序，我们可以使用order_by()语句</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> pet <span class="keyword">in</span> Pet.select().where(Pet.owner == uncle_bob).order_by(Pet.name):</span><br><span class="line">    <span class="keyword">print</span> pet.name</span><br></pre></td></tr></table></figure>
+<p>按年龄从小到大列出people</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> person <span class="keyword">in</span> Person.select().order_by(Perso.birthday.desc()):</span><br><span class="line">    <span class="keyword">print</span> person.name, person.birthday</span><br></pre></td></tr></table></figure>
+<p>列出所有的people和他们的宠物信息</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> person <span class="keyword">in</span> Person.select():</span><br><span class="line">    <span class="keyword">print</span> person.name, person.pets.count</span><br><span class="line">    <span class="keyword">for</span> pet <span class="keyword">in</span> person.pets:</span><br><span class="line">        <span class="keyword">print</span> pet.name, pet.animal_type</span><br></pre></td></tr></table></figure>
+<p>我们又一次遇到一个n + 1的查询行为的经典例子。我们可以通过执行连接和聚合记录来避免这种情况。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">subquery = Pet.select(fn.COUNT(pet.id)).where(Pet.owner == Person.id)</span><br><span class="line">query = (Person.select(Person, pet, subquery.alias(<span class="string">'pet_count'</span>)).join(Pet, JOIN.LEFT_OUTER).order_by(Person.name))</span><br><span class="line"><span class="keyword">for</span> person <span class="keyword">in</span> query.aggregate_rows():</span><br><span class="line">    <span class="keyword">print</span> person.name, person.pets.count</span><br><span class="line">    <span class="keyword">for</span> pet <span class="keyword">in</span> person.pets:</span><br><span class="line">        <span class="keyword">print</span> pet.name, pet.animal_type</span><br><span class="line"></span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">即使我们创建了分开的子查询，但是实际执行了一次查询。</span><br><span class="line">最后，做一次复杂的查询吧，获取生日符合以下条件的people:</span><br><span class="line"></span><br><span class="line">* before <span class="number">1940</span> (grandma)</span><br><span class="line">* after <span class="number">1959</span> (bob)</span><br><span class="line"></span><br><span class="line">```python</span><br><span class="line">d1940 = date(<span class="number">1940</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">d1960 = date(<span class="number">1960</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">query = (Person.select().where((Person.birthday &lt; d1940) | (Perosn.birthday &gt; d1960)))</span><br><span class="line"><span class="keyword">for</span> person <span class="keyword">in</span> query:</span><br><span class="line">    <span class="keyword">print</span> person.name, person.birthday</span><br></pre></td></tr></table></figure>
+<p>做一次相反的查询，获取在1940年和1960年之间的people</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">d1940 = date(<span class="number">1940</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">d1960 = date(<span class="number">1960</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">query = (Person.select().where((Person.birthday &gt; d1940) &amp; (Perosn.birthday &lt; d1960)))</span><br><span class="line"><span class="keyword">for</span> person <span class="keyword">in</span> query:</span><br><span class="line">    <span class="keyword">print</span> person.name, person.birthday</span><br></pre></td></tr></table></figure>
+<p>做最后一次查询，这里将用到一个SQL函数获取名字开头是’g’|’G’的people</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">expression = (fn.Lower(fn.Substr(Person.name, <span class="number">1</span>, <span class="number">1</span>)) == <span class="string">'g'</span>)</span><br><span class="line"><span class="keyword">for</span> person <span class="keyword">in</span> Person.select().where(experssion):</span><br><span class="line">    <span class="keyword">print</span> person.name</span><br></pre></td></tr></table></figure>
+<p>数据库操作完毕，需要关闭数据库连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.close()</span><br></pre></td></tr></table></figure>
+<p>这只是最基本的，你可以让你的查询更复杂。</p>
+<p>其他SQL语句也可用，例如</p>
+<ul>
+<li>group_by()</li>
+<li>having()</li>
+<li>limit() and offset()</li>
+</ul>
+<h4 id="与现有数据库协同工作"><a href="#与现有数据库协同工作" class="headerlink" title="与现有数据库协同工作"></a>与现有数据库协同工作</h4><p>如果你已经有了数据库，你可以使用pwiz（一种模型生成器）自动生成peewee模型；例如，假设我有postgresql数据库，命名为charles_blog,我将执行:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pwiz -e postgresql charles_blog &gt; blog_models.py</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ljming.top/2017/10/24/peewee入门/" data-id="cjq7sqp0j0006375sqsgyzlur" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ORM/">ORM</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/10/24/mysqldump/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          how to back up and restore a mysql database
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/10/12/singleton/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Java设计模式之单例模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 12.5px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 10px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 15px;">Spark</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 17.5px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/rocketmq之broker源码学习/">rocketmq之broker源码学习</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/sparkTransformation-Actions/">spark transformation 和 actions 操作</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/spark-sparkSQL/">spark SQL 编程入门</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/">python 爬虫实战之-百度联想词抓取</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/">python爬虫_part6_scrapy架构学习</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

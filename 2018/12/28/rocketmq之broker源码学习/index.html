@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>rocketmq之broker源码学习 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="rocketmq之broker解析.">
+<meta name="keywords" content="RocketMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rocketmq之broker源码学习">
+<meta property="og:url" content="http://ljming.top/2018/12/28/rocketmq之broker源码学习/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="rocketmq之broker解析.">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="http://ljming.top/2018/12/28/rocketmq之broker源码学习/broker_conf.jpg">
+<meta property="og:image" content="http://ljming.top/2018/12/28/rocketmq之broker源码学习/store_path.png">
+<meta property="og:updated_time" content="2019-01-02T14:10:35.340Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="rocketmq之broker源码学习">
+<meta name="twitter:description" content="rocketmq之broker解析.">
+<meta name="twitter:image" content="http://ljming.top/2018/12/28/rocketmq之broker源码学习/broker_conf.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-rocketmq之broker源码学习" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/28/rocketmq之broker源码学习/" class="article-date">
+  <time datetime="2018-12-28T08:28:48.000Z" itemprop="datePublished">2018-12-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/消息队列/">消息队列</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      rocketmq之broker源码学习
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>rocketmq之broker解析.</p>
+<a id="more"></a>
+<h2 id="broker-概述"><a href="#broker-概述" class="headerlink" title="broker 概述"></a>broker 概述</h2><p>broker 是RocketMQ系统的主要组成部分。</p>
+<p>broker接收存储从producer发送过来的消息，并准备处理来自消费者的拉取请求。它还存储与消息相关的元数据，包括consumer group，消耗进度 offset 和 topic/queue 信息。</p>
+<p>根据角色可以将 broker 分为两类：master、slave。 master broker 提供RW（读写）权限，slave broker 只读。master 又可以分为 <code>ASYNC_MASTER</code>，<code>SYNC_MASTER</code>。如果不能容忍消息的丢失，建议部署 <code>SYNC_MASTER</code> 加 <code>SLAVE</code>。如果对消息的丢失是可以容忍的，<br>但是你想broker总是可用的，你可以部署<code>ASYNC_MASTER</code> 加 <code>SLAVE</code>。</p>
+<p>为了部署没有单点故障的高可用集群，应该部署多个 broker 集合。一个 broker 集合包含一个 brokerId 为0的master和若干个brokerId非0的slave。<br>在一个集合里的所有broker具有相同的brokerName。在严重的场景下，一个broker集合至少有两个broker，每个topic都存在于两个或更多broker里。</p>
+<p><strong>broker 默认配置</strong></p>
+<p><img src="/2018/12/28/rocketmq之broker源码学习/broker_conf.jpg" alt="broker默认配置"></p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>listenPort</td>
+<td>10911</td>
+<td>客户端监听端口</td>
+</tr>
+<tr>
+<td>nameserverAddr</td>
+<td>null</td>
+<td>NameServer 地址</td>
+</tr>
+<tr>
+<td>brokerIP1</td>
+<td>网络接口的InetAddress</td>
+<td>如果有多个地址，应配置</td>
+</tr>
+<tr>
+<td>brokerName</td>
+<td>null</td>
+<td>broker 名称</td>
+</tr>
+<tr>
+<td>brokerClusterName</td>
+<td>DefaultCluster</td>
+<td>broker 所属集群</td>
+</tr>
+<tr>
+<td>brokerId</td>
+<td>0</td>
+<td>brokerId， 0 表示master，正整数表示slave</td>
+</tr>
+<tr>
+<td>storePathCommitLog</td>
+<td>$HOME/store/commitlog/</td>
+<td>commitlog 存储文件路径</td>
+</tr>
+<tr>
+<td>storePathConsumerQueue</td>
+<td>$HOME/store/consumequeue/</td>
+<td>消费队列存储路径</td>
+</tr>
+<tr>
+<td>mapedFileSizeCommitLog</td>
+<td>1024<code>*</code>1024<code>*</code>1024(1G)</td>
+<td>commitlog 文件大小</td>
+</tr>
+<tr>
+<td>deleteWhen</td>
+<td>04</td>
+<td>何时删除超出保留时间的提交日志</td>
+</tr>
+<tr>
+<td>fileReserverdTime</td>
+<td>48</td>
+<td>在删除之前保留commitlog的小时数</td>
+</tr>
+<tr>
+<td>brokerRole</td>
+<td>ASYNC_MASTER</td>
+<td>SYNC_MASTER/ASYNC_MASTER/SLVAE</td>
+</tr>
+<tr>
+<td>flushDiskType</td>
+<td>ASYNC_FLUSH</td>
+<td>{SYNC_FLUSH/ASYNC_FLUSH}.在确认生产者之前，SYNC_FLUSH模式的broker将每个消息刷新到磁盘上。另一方面，ASYNC_FLUSH模式的broker利用了组提交，实现了更好的性能。</td>
+</tr>
+</tbody>
+</table>
+<p>对于flushDiskType而言，建议使用 <code>ASYNC_FLUSH</code>, <code>SYNC_FLUSH</code> 代价很大而且会导致性能的流失。如果想要可靠，建议使用 <code>SYNC_MASTER</code> 加 <code>SLAVE</code>。</p>
+<h2 id="broker-启动过程"><a href="#broker-启动过程" class="headerlink" title="broker 启动过程"></a>broker 启动过程</h2><p>broker的启动，由BrokerStartup处理，直接执行该类的main方法。broker 启动过程大致分为3步。</p>
+<ul>
+<li>解析命令行参数，获取用户启动broker传过来的参数</li>
+<li>BrokerController 初始化</li>
+<li>BrokerController 启动</li>
+</ul>
+<p>BrokerStartup.main()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    start(createBrokerController(args));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static BrokerController start(BrokerController controller) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        controller.start();</span><br><span class="line">        String tip = &quot;The broker[&quot; + controller.getBrokerConfig().getBrokerName() + &quot;, &quot;</span><br><span class="line">            + controller.getBrokerAddr() + &quot;] boot success. serializeType=&quot; + RemotingCommand.getSerializeTypeConfigInThisServer();</span><br><span class="line"></span><br><span class="line">        if (null != controller.getBrokerConfig().getNamesrvAddr()) &#123;</span><br><span class="line">            tip += &quot; and name server is &quot; + controller.getBrokerConfig().getNamesrvAddr();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        log.info(tip);</span><br><span class="line">        return controller;</span><br><span class="line">    &#125; catch (Throwable e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        System.exit(-1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从上述代码看出，broker启动的核心是BrokerController。下面就从BrokerController的initialize和start方法剖析broker启动过程。</p>
+<h3 id="BrokerController-initialize"><a href="#BrokerController-initialize" class="headerlink" title="BrokerController.initialize()"></a>BrokerController.initialize()</h3><p>第一步，加载落盘的文件信息。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">result = result &amp;&amp; this.topicConfigManager.load(); // 加载topic信息</span><br><span class="line"></span><br><span class="line">result = result &amp;&amp; this.consumerOffsetManager.load(); // 加载consumerOffset信息</span><br><span class="line">result = result &amp;&amp; this.subscriptionGroupManager.load(); // 加载订阅组信息</span><br><span class="line"></span><br><span class="line">if (result) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        this.messageStore =</span><br><span class="line">            new DefaultMessageStore(this.messageStoreConfig, this.brokerStatsManager, this.messageArrivingListener,</span><br><span class="line">                this.brokerConfig); </span><br><span class="line">        this.brokerStats = new BrokerStats((DefaultMessageStore) this.messageStore);</span><br><span class="line">        //load plugin</span><br><span class="line">        MessageStorePluginContext context = new MessageStorePluginContext(messageStoreConfig, brokerStatsManager, messageArrivingListener, brokerConfig);</span><br><span class="line">        this.messageStore = MessageStoreFactory.build(context, this.messageStore);</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        result = false;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">result = result &amp;&amp; this.messageStore.load(); // 加载磁盘里的消息，包括commitLog、consumerQueue、checkPoint、index等信息</span><br></pre></td></tr></table></figure></p>
+<p>broker落盘的数据保存目录结构，存储路径为 ${home}/store</p>
+<p><img src="/2018/12/28/rocketmq之broker源码学习/store_path.png" alt="store文件夹"></p>
+<p>第二步，实例化remotingServer和五个线程池。这五个线程池分别是：</p>
+<ul>
+<li>sendMessageExecutor: 处理消息发送的线程池</li>
+<li>pullMessageExecutor: 处理消息拉取的线程池</li>
+<li>adminBrokerExecutor: 管理员Broker线程池？？ 还没搞清楚这是干嘛的</li>
+<li>clientManageExecutor: 客户端管理线程池</li>
+<li>consumerManageExecutor: 消费管理线程池</li>
+</ul>
+<p>第三步，注册时间处理单元–registerProcessor()</p>
+<p>将以下处理器注册到remotingServer中。</p>
+<ul>
+<li>SendMessageProcessor: 处理消息的处理器，对应的线程池是 sendMessageExecutor</li>
+<li>PullMessageProcessor: 拉取消息的处理器，对应的线程池是 pullMessageExecutor</li>
+<li>QueryMessageProcessor: 获取消息的处理器，对应的线程池是 pullMessageExecutor</li>
+<li>ClientManageProcessor: 客户端管理的处理器，对应的线程池是 clientManageExecutor</li>
+<li>ConsumerManageProcessor: 消费管理的处理器，对应的线程池是 consumerManageExecutor</li>
+<li>EndTransactionProcessor: 事务处理器，对应的是线程池 sendMessageExecutor</li>
+<li>AdminBrokerProcessor: 管理broker的处理器，对应的线程池是 adminBrokerExecutor</li>
+</ul>
+<p>注册处理器的实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public void registerProcessor(int requestCode, NettyRequestProcessor processor, ExecutorService executor) &#123;</span><br><span class="line">    ExecutorService executorThis = executor;</span><br><span class="line">    if (null == executor) &#123;</span><br><span class="line">        executorThis = this.publicExecutor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Pair&lt;NettyRequestProcessor, ExecutorService&gt; pair = new Pair&lt;NettyRequestProcessor, ExecutorService&gt;(processor, executorThis);</span><br><span class="line">    this.processorTable.put(requestCode, pair);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Pair对象类型与hashmap，key-value的数据格式，这里 key 为处理器对象，value 为对应的线程池。对应的processor处理不同的请求，不同的请求，有不同的请求码，最后，会将Pair对象放到processorTable（hashMap）中，key 为 requestCode，value 是 Pair。</p>
+<p>到这里，broker 初始化完成。接下来就是 broker 的启动。</p>
+<h3 id="Broker-start"><a href="#Broker-start" class="headerlink" title="Broker.start()"></a>Broker.start()</h3><p>broker 的启动，具体实现在 BrokerController.start() 里。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">public void start() throws Exception &#123;</span><br><span class="line">    if (this.messageStore != null) &#123;</span><br><span class="line">        this.messageStore.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.remotingServer != null) &#123;</span><br><span class="line">        this.remotingServer.start(); // remotingServer启动</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.fastRemotingServer != null) &#123;</span><br><span class="line">        this.fastRemotingServer.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.brokerOuterAPI != null) &#123;</span><br><span class="line">        this.brokerOuterAPI.start(); // broker 和外界发生信息交流的api服务启动</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.pullRequestHoldService != null) &#123;</span><br><span class="line">        this.pullRequestHoldService.start(); // 处理拉取消息请求的服务启动</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.clientHousekeepingService != null) &#123;</span><br><span class="line">        this.clientHousekeepingService.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.filterServerManager != null) &#123;</span><br><span class="line">        this.filterServerManager.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    this.registerBrokerAll(true, false);</span><br><span class="line"></span><br><span class="line">    this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                BrokerController.this.registerBrokerAll(true, false);</span><br><span class="line">            &#125; catch (Throwable e) &#123;</span><br><span class="line">                log.error(&quot;registerBrokerAll Exception&quot;, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, 1000 * 10, 1000 * 30, TimeUnit.MILLISECONDS);</span><br><span class="line"></span><br><span class="line">    if (this.brokerStatsManager != null) &#123;</span><br><span class="line">        this.brokerStatsManager.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.brokerFastFailure != null) &#123;</span><br><span class="line">        this.brokerFastFailure.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="messageStore-start-分析"><a href="#messageStore-start-分析" class="headerlink" title="messageStore.start() 分析"></a>messageStore.start() 分析</h4><p>messageStore 有两种实现，DefaultMessageStore 和 AbstractPluginMessageStore。这里看看 DefaultMessageStore。</p>
+<p><strong>DefaultMessageStore.start()</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public void start() throws Exception &#123;</span><br><span class="line">    this.flushConsumeQueueService.start();</span><br><span class="line">    this.commitLog.start();</span><br><span class="line">    this.storeStatsService.start();</span><br><span class="line"></span><br><span class="line">    if (this.scheduleMessageService != null &amp;&amp; SLAVE != messageStoreConfig.getBrokerRole()) &#123;</span><br><span class="line">        this.scheduleMessageService.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (this.getMessageStoreConfig().isDuplicationEnable()) &#123;</span><br><span class="line">        this.reputMessageService.setReputFromOffset(this.commitLog.getConfirmOffset());</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        this.reputMessageService.setReputFromOffset(this.commitLog.getMaxOffset());</span><br><span class="line">    &#125;</span><br><span class="line">    this.reputMessageService.start();</span><br><span class="line"></span><br><span class="line">    this.haService.start();</span><br><span class="line"></span><br><span class="line">    this.createTempFile(); // 创建临时文件 abort</span><br><span class="line">    this.addScheduleTask(); // 添加定时任务</span><br><span class="line">    this.shutdown = false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>flushConsumerQueueService.start(): 启动消费队列刷盘服务</strong></p>
+<p>默认每1000ms执行一次刷盘，每次默认从consumerQueue里取出两页数据刷入磁盘。 </p>
+<p><strong>commitLog.start(): 启动commitLog刷盘服务</strong></p>
+<p>这里的实现是基于FlushCommitLogService服务，它有两种子类，如果transientStorePoolEnable是开启的，并且刷盘方式是<code>ASYNC_FLUSH</code>，则具体实现是CommitRealTimeService服务，否则的具体是实现在FlushRealTimeService。CommitRealTimeService 和 FlushRealTimeService的区别: 一是刷盘间隔，前者为200ms, 后者是500ms；二是彻底刷盘时间间隔，前者200ms,后者为1000*10(10s)；三是刷入的目标，前者是将数据提交到FileChannel,后者是将数据写入到磁盘。</p>
+<p><strong>storeStatsService.start(): 启动存储统计的服务</strong></p>
+<p>默认每1000ms执行一次。</p>
+<p><strong>scheduleMessageService.start(): 定时任务消息服务</strong></p>
+<p>延时消息服务相关</p>
+<p><strong>reputMessageService.start()</strong></p>
+<p>从物理队列解析消息重新发送到逻辑队列</p>
+<p><strong>haService.start(): 高可用服务</strong></p>
+<p>同步双写，异步复制功能</p>
+<h3 id="Broker-接收消息"><a href="#Broker-接收消息" class="headerlink" title="Broker 接收消息"></a>Broker 接收消息</h3><p>在broker的初始化过程中，rocketmq 将SendMessageProcessor注册到了remotingServer，对应的线程池是 sendMessageExecutor，对应的RequestCode是SEND_MESSAGE=10;具体接收消息的逻辑在SendMessageProcessor.processRequest()方法中。</p>
+<h4 id="SendMessageProcessor-processRequest-ChannelHandlerContext-ctx-RemotingCommand-request"><a href="#SendMessageProcessor-processRequest-ChannelHandlerContext-ctx-RemotingCommand-request" class="headerlink" title="SendMessageProcessor.processRequest(ChannelHandlerContext ctx, RemotingCommand request);"></a>SendMessageProcessor.processRequest(ChannelHandlerContext ctx, RemotingCommand request);</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public RemotingCommand processRequest(ChannelHandlerContext ctx,</span><br><span class="line">                    RemotingCommand request) throws RemotingCommandException &#123;</span><br><span class="line">    SendMessageContext mqtraceContext;</span><br><span class="line">    switch (request.getCode()) &#123;</span><br><span class="line">        case RequestCode.CONSUMER_SEND_MSG_BACK:</span><br><span class="line">            return this.consumerSendMsgBack(ctx, request);</span><br><span class="line">        default:</span><br><span class="line">            SendMessageRequestHeader requestHeader = parseRequestHeader(request); // 解析请求头</span><br><span class="line">            if (requestHeader == null) &#123;</span><br><span class="line">                return null;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            mqtraceContext = buildMsgContext(ctx, requestHeader);</span><br><span class="line">            this.executeSendMessageHookBefore(ctx, request, mqtraceContext);</span><br><span class="line"></span><br><span class="line">            RemotingCommand response;</span><br><span class="line">            if (requestHeader.isBatch()) &#123; // 如果是批量请求</span><br><span class="line">                response = this.sendBatchMessage(ctx, request, mqtraceContext, requestHeader);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                response = this.sendMessage(ctx, request, mqtraceContext, requestHeader); // 接收消息</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            this.executeSendMessageHookAfter(response, mqtraceContext);</span><br><span class="line">            return response;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="message-落盘"><a href="#message-落盘" class="headerlink" title="message 落盘"></a>message 落盘</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">private RemotingCommand sendMessage(final ChannelHandlerContext ctx,</span><br><span class="line">                                final RemotingCommand request,</span><br><span class="line">                                final SendMessageContext sendMessageContext,</span><br><span class="line">                                final SendMessageRequestHeader requestHeader) throws RemotingCommandException &#123;</span><br><span class="line"></span><br><span class="line">    final RemotingCommand response = RemotingCommand.createResponseCommand(SendMessageResponseHeader.class);</span><br><span class="line">    final SendMessageResponseHeader responseHeader = (SendMessageResponseHeader)response.readCustomHeader();</span><br><span class="line">    /**</span><br><span class="line">    省略</span><br><span class="line">    */</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        putMessageResult = this.brokerController.getMessageStore().putMessage(msgInner); // 落盘</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return handlePutMessageResult(putMessageResult, response, request, msgInner, responseHeader, sendMessageContext, ctx, queueIdInt);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>落盘的具体实现，在DefaultMessageStore中，是将数据写入到commitLog文件中。写入时，每次都取mappedFileQueue的mappedFiles的最后一个mappedFile，如果为空或者已经满了，就会新建一个mappedFile对象。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ljming.top/2018/12/28/rocketmq之broker源码学习/" data-id="cjq7sqp160019375sap892jy4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/05/sparkTransformation-Actions/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">spark transformation 和 actions 操作</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 12.5px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 10px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 15px;">Spark</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 17.5px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/rocketmq之broker源码学习/">rocketmq之broker源码学习</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/sparkTransformation-Actions/">spark transformation 和 actions 操作</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/spark-sparkSQL/">spark SQL 编程入门</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/">python 爬虫实战之-百度联想词抓取</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/">python爬虫_part6_scrapy架构学习</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

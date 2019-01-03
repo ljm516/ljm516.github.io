@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>2017年Java开发岗位面试题回答(基础篇) | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="题目来源于百面网">
+<meta name="keywords" content="面试题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2017年Java开发岗位面试题回答(基础篇)">
+<meta property="og:url" content="http://ljming.top/2017/11/15/2017年Java面试题(基础)/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="题目来源于百面网">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-11-05T15:22:52.614Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2017年Java开发岗位面试题回答(基础篇)">
+<meta name="twitter:description" content="题目来源于百面网">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-2017年Java面试题(基础)" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/11/15/2017年Java面试题(基础)/" class="article-date">
+  <time datetime="2017-11-15T03:15:00.000Z" itemprop="datePublished">2017-11-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      2017年Java开发岗位面试题回答(基础篇)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>题目来源于<a href="http://www.100mian.com/mianshi/java/50036.html" target="_blank" rel="noopener">百面网</a></p>
+<a id="more"></a>
+<h2 id="String-为什么是-final-的"><a href="#String-为什么是-final-的" class="headerlink" title="String 为什么是 final 的"></a>String 为什么是 final 的</h2><p><strong>不可变类只是其实例不能被修改的类。</strong></p>
+<p>从这5个方面讲</p>
+<ul>
+<li>不要提供任何会修改对象状态的方法</li>
+<li>保证类不会被扩展</li>
+<li>是所有的域都是final的</li>
+<li>是所有的域都成为私有的</li>
+<li>确保对于任何可变性组件的互斥访问。</li>
+</ul>
+<p>先看看 String 类的定义，String 类是由 final 修饰的，保证不会被继承。</p>
+<p>再看看它是怎样实现的:</p>
+<p>private final char value[]: Java是基于字符数组实现字符串的，并且是有 final 修饰，保证其不可变性。这就是为什么 String 实例不可变得原因。</p>
+<p>字符数组代表了 String 对象的值。由于是 private final 修饰的，正常情况下外界没有办法去修改它的值。保证所有的域都是 final 的以及所有的域（属性）都是私有的。</p>
+<p>String 类没有提供任何会修改其状态的方法。 replace()、subString()、concat() 的内部实现都是返回了一个新的字符串。</p>
+<p><strong>不可变类的好处</strong></p>
+<ul>
+<li>本质上是线程安全的，不要求同步，可以被自由的共享。</li>
+</ul>
+<p><strong>破坏 String 的不可变</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">breakStringUnChanged</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">   String str1 = <span class="string">"ljming"</span>;</span><br><span class="line">   System.out.println(str1);</span><br><span class="line">   Field value = String.class.getDeclaredField(<span class="string">"value"</span>);</span><br><span class="line">   value.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">   <span class="keyword">char</span> c[] = (<span class="keyword">char</span>[]) value.get(str1);</span><br><span class="line">   c[<span class="number">1</span>] = <span class="string">'m'</span>;</span><br><span class="line">   System.out.println(str1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="HashMap-的实现原理，底层结构"><a href="#HashMap-的实现原理，底层结构" class="headerlink" title="HashMap 的实现原理，底层结构"></a>HashMap 的实现原理，底层结构</h2><p>HashMap 底层是数组+链表的数据结构。</p>
+<h3 id="put-方法的内部实现"><a href="#put-方法的内部实现" class="headerlink" title="put 方法的内部实现"></a>put 方法的内部实现</h3><p>首先计算 key 的 hash 值，通过该 hash 值找到该值在数组的存储位置，在对应位置中存储了表示这个值的 node 节点，节点内容包括 key 值和 Value 值。如果出现不同的 key，但是计算出来的 hash 值是相同的，想通过 hash 值找到相对应的存储位置，然后在这个位置以链表的形式存储两个值，如果链表的长度大于等于8，为了优化检索速度，将以红黑二叉树的形式存储。</p>
+<h3 id="get-方法的内部实现"><a href="#get-方法的内部实现" class="headerlink" title="get 方法的内部实现"></a>get 方法的内部实现</h3><p>首先通过 key 计算出 hash 值，通过这个 hash 值找到对应位置的节点。它总是会先判断头节点是不是要查找的值，如果是，直接返回，否则，循环节点，知道找到和 key 值相等的节点，并返回。如果没找到，就返回 null。</p>
+<h2 id="描述一下-ArrayList-和-LinkedList-各自的实现和区别"><a href="#描述一下-ArrayList-和-LinkedList-各自的实现和区别" class="headerlink" title="描述一下 ArrayList 和 LinkedList 各自的实现和区别"></a>描述一下 ArrayList 和 LinkedList 各自的实现和区别</h2><h3 id="ArrayList-的实现"><a href="#ArrayList-的实现" class="headerlink" title="ArrayList 的实现"></a>ArrayList 的实现</h3><p>内部使用数组进行数据存储。</p>
+<h3 id="LinkedList-的实现"><a href="#LinkedList-的实现" class="headerlink" title="LinkedList 的实现"></a>LinkedList 的实现</h3><p>内部使用链表进行数据存储。</p>
+<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><ul>
+<li>在插入数据方面，LinkedList 效率要高于 ArrayList。原因: LinkedList 插入数据时，只需要改变节点的 pre 和 next 的指向；而 ArrayList 在插入数据时，如果不是在尾部插入，需要挪动其它数据，给新加入的数据腾出位置，这样是很耗时的，而且如果出现 ArrayList 容量不足的情况下，还要进行数组扩容操作。</li>
+<li>在获取数据方面，ArrayList 效率要高于LinkedList。原因: ArrayList 的 get(index) 方法可以直接返回该下标的值。而 LinkedList 需要循环遍历每个节点，从而找到对应的节点。</li>
+</ul>
+<h2 id="Java-的队列有哪些，有什么区别。"><a href="#Java-的队列有哪些，有什么区别。" class="headerlink" title="Java 的队列有哪些，有什么区别。"></a>Java 的队列有哪些，有什么区别。</h2><p>阻塞队列BlockQueue</p>
+<h3 id="ArrayBlockingQueue-和-LinkedBlockingQueue"><a href="#ArrayBlockingQueue-和-LinkedBlockingQueue" class="headerlink" title="ArrayBlockingQueue 和 LinkedBlockingQueue"></a>ArrayBlockingQueue 和 LinkedBlockingQueue</h3><p>顾名思义，ArrayBlockingQueue 是基于数组实现的，LinkedBlockingQueue 是基于链表实现的。ArrayBlockingQueue 更适合做有界队列，因为队列中可容纳的最大元素需要在队列创建的时候指定。而 LinkedBlockingQueue 适合做无界队列，其内部元素可以动态添加。</p>
+<h2 id="反射中，Class-forName-和-ClassLoader-的区别"><a href="#反射中，Class-forName-和-ClassLoader-的区别" class="headerlink" title="反射中，Class.forName 和 ClassLoader 的区别"></a>反射中，Class.forName 和 ClassLoader 的区别</h2><h3 id="先看一个例子"><a href="#先看一个例子" class="headerlink" title="先看一个例子"></a>先看一个例子</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">classLoaderTest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">       Class clazz = Class.forName(<span class="string">"com.javaReview.pattern.factoryPattern.factoryMethod.BenzCar"</span>);</span><br><span class="line">       ClassLoader classLoader = ClassLoader.getSystemClassLoader();</span><br><span class="line">       Class benzCar = classLoader.loadClass(<span class="string">"com.javaReview.pattern.factoryPattern.factoryMethod.BenzCar"</span>);</span><br><span class="line">       System.out.println(clazz.getSimpleName());</span><br><span class="line">       System.out.println(benzCar.getSimpleName());</span><br><span class="line">   &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">       e.printStackTrace();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="再看-Class-forName-的源码实现"><a href="#再看-Class-forName-的源码实现" class="headerlink" title="再看 Class.forName 的源码实现"></a>再看 Class.forName 的源码实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CallerSensitive</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Class&lt;?&gt; forName(String className)</span><br><span class="line">           <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">   Class&lt;?&gt; caller = Reflection.getCallerClass();</span><br><span class="line">   <span class="keyword">return</span> forName0(className, <span class="keyword">true</span>, ClassLoader.getClassLoader(caller), caller);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@CallerSensitive</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Class&lt;?&gt; forName(String name, <span class="keyword">boolean</span> initialize,</span><br><span class="line">                              ClassLoader loader)</span><br><span class="line">   <span class="keyword">throws</span> ClassNotFoundException</span><br><span class="line">&#123;</span><br><span class="line">   Class&lt;?&gt; caller = <span class="keyword">null</span>;</span><br><span class="line">   SecurityManager sm = System.getSecurityManager();</span><br><span class="line">   <span class="keyword">if</span> (sm != <span class="keyword">null</span>) &#123;</span><br><span class="line">       <span class="comment">// Reflective call to get caller class is only needed if a security manager</span></span><br><span class="line">       <span class="comment">// is present.  Avoid the overhead of making this call otherwise.</span></span><br><span class="line">       caller = Reflection.getCallerClass();</span><br><span class="line">       <span class="keyword">if</span> (sun.misc.VM.isSystemDomainLoader(loader)) &#123;</span><br><span class="line">           ClassLoader ccl = ClassLoader.getClassLoader(caller);</span><br><span class="line">           <span class="keyword">if</span> (!sun.misc.VM.isSystemDomainLoader(ccl)) &#123;</span><br><span class="line">               sm.checkPermission(</span><br><span class="line">                   SecurityConstants.GET_CLASSLOADER_PERMISSION);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> forName0(name, initialize, loader, caller);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> Class&lt;?&gt; forName0(String name, <span class="keyword">boolean</span> initialize, ClassLoader loader, Class&lt;?&gt; caller) <span class="keyword">throws</span> ClassNotFoundException;</span><br></pre></td></tr></table></figure>
+<h3 id="最后看-ClassLoader-loader-的实现"><a href="#最后看-ClassLoader-loader-的实现" class="headerlink" title="最后看 ClassLoader.loader 的实现"></a>最后看 ClassLoader.loader 的实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Class&lt;?&gt; loadClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">   <span class="keyword">return</span> loadClass(name, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> Class&lt;?&gt; loadClass(String name, <span class="keyword">boolean</span> resolve) <span class="keyword">throws</span> ClassNotFoundException</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">synchronized</span> (getClassLoadingLock(name)) &#123;</span><br><span class="line">       <span class="comment">// First, check if the class has already been loaded</span></span><br><span class="line">       Class&lt;?&gt; c = findLoadedClass(name);</span><br><span class="line">       <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="keyword">long</span> t0 = System.nanoTime();</span><br><span class="line">           <span class="keyword">try</span> &#123;</span><br><span class="line">               <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">                   c = parent.loadClass(name, <span class="keyword">false</span>);</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   c = findBootstrapClassOrNull(name);</span><br><span class="line">               &#125;</span><br><span class="line">           &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">               <span class="comment">// ClassNotFoundException thrown if class not found</span></span><br><span class="line">               <span class="comment">// from the non-null parent class loader</span></span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">               <span class="comment">// If still not found, then invoke findClass in order</span></span><br><span class="line">               <span class="comment">// to find the class.</span></span><br><span class="line">               <span class="keyword">long</span> t1 = System.nanoTime();</span><br><span class="line">               c = findClass(name);</span><br><span class="line"></span><br><span class="line">               <span class="comment">// this is the defining class loader; record the stats</span></span><br><span class="line">               sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">               sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">               sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">if</span> (resolve) &#123;</span><br><span class="line">           resolveClass(c);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> c;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>class.forName(String className) 使用默认的加载器来加载类，并且进行初始化</li>
+<li>class.forName(String className, boolean initialize, ClassLoader loader) 可以指定加载器和是否初始化。</li>
+<li>classLoader.loadClass(String name) 先判断类是否已经加载，如果已经加载，不处理，反则加载类。不会实例化。</li>
+</ul>
+<p>区别： </p>
+<ul>
+<li>Class.forName 可指定加载器，loadClass 不能。</li>
+<li>Class.forName 可指定时候初始化类，而 loadClass 不初始化类。如果客户端代码需要依赖类的实例，就只能使用Class.forName, 并指定 initialize 为 true。</li>
+</ul>
+<h2 id="Java7、8的新特性"><a href="#Java7、8的新特性" class="headerlink" title="Java7、8的新特性"></a>Java7、8的新特性</h2><h3 id="Java7-新特性"><a href="#Java7-新特性" class="headerlink" title="Java7 新特性"></a>Java7 新特性</h3><ul>
+<li>switch 增加对 String 类型的支持</li>
+<li>catch子句可以同时捕获多个异常</li>
+</ul>
+<h3 id="Java8-新特性"><a href="#Java8-新特性" class="headerlink" title="Java8 新特性"></a>Java8 新特性</h3><ul>
+<li>Lambda 表达式</li>
+<li>接口中的默认方法: Java 8准许我们在接口中增加一个通过default关键字修饰的非抽象的方法</li>
+<li>Stream API, 并行流</li>
+</ul>
+<h2 id="Java-内存泄漏的问题调查定位：-jmap-jstack-的使用。"><a href="#Java-内存泄漏的问题调查定位：-jmap-jstack-的使用。" class="headerlink" title="Java 内存泄漏的问题调查定位： jmap, jstack 的使用。"></a>Java 内存泄漏的问题调查定位： jmap, jstack 的使用。</h2><p>这个还真不知道！好吧，Google 一下。</p>
+<h3 id="jstack"><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h3><p>主要用来查看某个 Java 进程内的线程堆栈信息。</p>
+<p>语法格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jstack [option] pid</span><br><span class="line">jstack [option] executable core</span><br><span class="line">jstack [option] [server-id@]remote-hostname-or-ip</span><br></pre></td></tr></table></figure>
+<p>jstack 可以定位到线程堆栈，根据堆栈信息我们可以定位到具体代码。</p>
+<h3 id="jmap"><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h3><p>jmap 用来查看堆内存使用状况，一般结合jhat使用。</p>
+<p>语法格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap [option] pid</span><br><span class="line">jmap [option] execute core</span><br><span class="line">jmap [option] [server-id@] remote-hostname-or-ip</span><br></pre></td></tr></table></figure>
+<p>使用jmap -heap pid查看进程堆内存使用情况，包括使用的GC算法、堆配置参数和各代中堆内存使用情况</p>
+<h2 id="String，StringBuilder，StringBuffer-的区别"><a href="#String，StringBuilder，StringBuffer-的区别" class="headerlink" title="String，StringBuilder，StringBuffer 的区别"></a>String，StringBuilder，StringBuffer 的区别</h2><ul>
+<li>String 不可变， StringBuilder 和 StringBuffer 可变</li>
+<li>StringBuilder 非线程安全，StringBuffer 线程安全（内部方法都使用了 Synchronized 修饰）。</li>
+</ul>
+<h2 id="HashTable-和-HashMap-的区别"><a href="#HashTable-和-HashMap-的区别" class="headerlink" title="HashTable 和 HashMap 的区别"></a>HashTable 和 HashMap 的区别</h2><ul>
+<li>HashTable 是线程安全的，HashMap 是非线程安全的。</li>
+<li>HashMap 允许 null key 和 null value，HashTable 不允许。</li>
+<li>因为 HashTable 线程安全，所以效率要比 HashMap 低。</li>
+</ul>
+<h2 id="异常结构、运行时异常和非运行时异常，举例子"><a href="#异常结构、运行时异常和非运行时异常，举例子" class="headerlink" title="异常结构、运行时异常和非运行时异常，举例子"></a>异常结构、运行时异常和非运行时异常，举例子</h2><h2 id="String-类的常用方法"><a href="#String-类的常用方法" class="headerlink" title="String 类的常用方法"></a>String 类的常用方法</h2><ul>
+<li>boolean equals()</li>
+<li>int hashcode()</li>
+<li>String toString()</li>
+</ul>
+<p>…. 看 String 类的源码</p>
+<h2 id="Java-的引用类型有哪几种"><a href="#Java-的引用类型有哪几种" class="headerlink" title="Java 的引用类型有哪几种"></a>Java 的引用类型有哪几种</h2><h3 id="强引用"><a href="#强引用" class="headerlink" title="强引用"></a>强引用</h3><p>强引用也就是我们平时的 A a = new A();</p>
+<p>使用最普遍的引用，如果一个对象具有强引用，那GC绝不会回收它。JVM情愿抛出OutOfMemoryError 错误，使程序异常终止，也不会靠随意会有具有强引用的对象来解决内存不足的问题。</p>
+<h3 id="软引用"><a href="#软引用" class="headerlink" title="软引用"></a>软引用</h3><p>如果一个对象只具有软引用，则内存足够的情况下，GC不会去回收它，否则，就会回收这些对象。</p>
+<h3 id="弱引用"><a href="#弱引用" class="headerlink" title="弱引用"></a>弱引用</h3><p>弱引用和软引用的区别：只具有弱引用的对象拥有更短暂的生命周期，在GC线程在它管辖的内存区域过程中，一旦发现了只具有弱引用的对象，不管当前内存空间时候足够，都会回收它的内存。</p>
+<h3 id="虚引用"><a href="#虚引用" class="headerlink" title="虚引用"></a>虚引用</h3><p>和其他几种引用不同，虚引用并不会决定对象的生命周期。如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被GC回收。</p>
+<h2 id="抽象类和接口的区别"><a href="#抽象类和接口的区别" class="headerlink" title="抽象类和接口的区别"></a>抽象类和接口的区别</h2><ul>
+<li>抽象类中可以包含非抽象方法，接口只能有抽象方法(1.8允许一个非抽象的默认方法)</li>
+<li>接口里面只能对方法进行声明，抽象类既可以对方法进行声明也可以对方法进行实现。</li>
+<li>一个类只能继承一个类，但可以实现多个接口</li>
+</ul>
+<h2 id="Java-的基本类型和字节大小"><a href="#Java-的基本类型和字节大小" class="headerlink" title="Java 的基本类型和字节大小"></a>Java 的基本类型和字节大小</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>大小(字节)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int</td>
+<td>4</td>
+</tr>
+<tr>
+<td>char</td>
+<td>2</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>1</td>
+</tr>
+<tr>
+<td>short</td>
+<td>2</td>
+</tr>
+<tr>
+<td>long</td>
+<td>8</td>
+</tr>
+<tr>
+<td>float</td>
+<td>4</td>
+</tr>
+<tr>
+<td>double</td>
+<td>8</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<h2 id="HashTable、HashMap、ConcurrentHashMap-底层实现原理与线程安全问题"><a href="#HashTable、HashMap、ConcurrentHashMap-底层实现原理与线程安全问题" class="headerlink" title="HashTable、HashMap、ConcurrentHashMap 底层实现原理与线程安全问题"></a>HashTable、HashMap、ConcurrentHashMap 底层实现原理与线程安全问题</h2><p>这个，呃。。。 还是看源码吧。</p>
+<h2 id="自己实现-HashMap"><a href="#自己实现-HashMap" class="headerlink" title="自己实现 HashMap"></a>自己实现 HashMap</h2><p>mmp, 这就有点难了。</p>
+<h2 id="Hash-冲突了怎么办，那些解决-hash-冲突的方法"><a href="#Hash-冲突了怎么办，那些解决-hash-冲突的方法" class="headerlink" title="Hash 冲突了怎么办，那些解决 hash 冲突的方法"></a>Hash 冲突了怎么办，那些解决 hash 冲突的方法</h2><ul>
+<li>开放地址法</li>
+</ul>
+<p>开放地执法有一个公式:Hi=(H(key)+di) MOD m i=1,2,…,k(k&lt;=m-1)。其中，m为哈希表的表长。di 是产生冲突的时候的增量序列。如果di值可能为1,2,3,…m-1，称线性探测再散列。如果di取1，则每次冲突之后，向后移动1个位置.如果di取值可能为1,-1,2,-2,4,-4,9,-9,16,-16,…k<code>*</code>k,-k<code>*k</code>(k&lt;=m/2)<br>称二次探测再散列。如果di取值可能为伪随机数列。称伪随机探测再散列。</p>
+<ul>
+<li>再 hash 法</li>
+</ul>
+<p>当发生冲突时，使用第二个、第三个、哈希函数计算地址，直到无冲突时。缺点：计算时间增加。</p>
+<ul>
+<li>链地址法</li>
+</ul>
+<p>所有 key 的 hash 值相同的记录存储在同一线性链表中。</p>
+<ul>
+<li>建立一个公共溢出区</li>
+</ul>
+<p>假设哈希函数的值域为[0,m-1],则设向量HashTable[0..m-1]为基本表，另外设立存储空间向量OverTable[0..v]用以存储发生冲突的记录。</p>
+<p>mmp的。 只看懂了2和3。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ljming.top/2017/11/15/2017年Java面试题(基础)/" data-id="cjq7sqp1j0027375s2dej8i7j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/11/30/maven-study/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Maven 使用介绍
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/11/14/interview_experience/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">面试总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 12.5px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 10px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 15px;">Spark</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 17.5px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/rocketmq之broker源码学习/">rocketmq之broker源码学习</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/sparkTransformation-Actions/">spark transformation 和 actions 操作</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/spark-sparkSQL/">spark SQL 编程入门</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/">python 爬虫实战之-百度联想词抓取</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/">python爬虫_part6_scrapy架构学习</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

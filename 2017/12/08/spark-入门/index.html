@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Spark 学习入门 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="什么是sparkspark 是一个快速的、通用的大数据处理平台。">
+<meta name="keywords" content="Spark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark 学习入门">
+<meta property="og:url" content="http://ljming.top/2017/12/08/spark-入门/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="什么是sparkspark 是一个快速的、通用的大数据处理平台。">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-11-05T15:22:52.623Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark 学习入门">
+<meta name="twitter:description" content="什么是sparkspark 是一个快速的、通用的大数据处理平台。">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ljming.top"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-spark-入门" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/12/08/spark-入门/" class="article-date">
+  <time datetime="2017-12-08T12:40:00.000Z" itemprop="datePublished">2017-12-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/BigData/">BigData</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spark 学习入门
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是spark"><a href="#什么是spark" class="headerlink" title="什么是spark"></a>什么是spark</h2><p>spark 是一个快速的、通用的大数据处理平台。</p>
+<a id="more"></a>
+<h2 id="spark-的四大特性"><a href="#spark-的四大特性" class="headerlink" title="spark 的四大特性"></a>spark 的四大特性</h2><h3 id="快速性"><a href="#快速性" class="headerlink" title="快速性"></a>快速性</h3><p>在内存中运行程序比 hadoop mapReduce 快 100 倍， 比在磁盘中快 10 倍。</p>
+<h3 id="易用性"><a href="#易用性" class="headerlink" title="易用性"></a>易用性</h3><p>支持 Java，Scala，Python，R 等编程语言。支持 python，scala，R 的 shell 交互。</p>
+<h3 id="通用性"><a href="#通用性" class="headerlink" title="通用性"></a>通用性</h3><p>由 SQL，streaming，和负责的复杂的分析。</p>
+<h3 id="运行在任何地方"><a href="#运行在任何地方" class="headerlink" title="运行在任何地方"></a>运行在任何地方</h3><p>Spark 可以运行在 hadoop，Mesos，standalone 或者在云端。它可以访问不同的数据源，包括 HDFS,Cassandra,HBase,Hive和S3</p>
+<h2 id="Spark-四种部署模式"><a href="#Spark-四种部署模式" class="headerlink" title="Spark 四种部署模式"></a>Spark 四种部署模式</h2><h3 id="hadoop"><a href="#hadoop" class="headerlink" title="hadoop"></a>hadoop</h3><p>spark on yarn 用 yarn 资源管理器来管理 spark 的资源，这也是国内用的最多的模式。</p>
+<h3 id="mesos"><a href="#mesos" class="headerlink" title="mesos"></a>mesos</h3><p>也是类似于 yarn 的资源管理器，但是这个资源管理器，在国内用的不多，大多数还是在国外使用。</p>
+<h3 id="standalone"><a href="#standalone" class="headerlink" title="standalone"></a>standalone</h3><p>spark 自己来管理资源，也是用的比较多的一种模式。</p>
+<h3 id="cloud"><a href="#cloud" class="headerlink" title="cloud"></a>cloud</h3><p>部署到云端</p>
+<h2 id="quick-start"><a href="#quick-start" class="headerlink" title="quick start"></a>quick start</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">val textFile = sc.textFile(&quot;README.md&quot;);  </span><br><span class="line">// textFile: org.apache.spark.rdd.RDD[String] = README.md MapPartitionsRDD[3] at textFile at &lt;console&gt;:27</span><br><span class="line"></span><br><span class="line">textFile.count() // 返回RDD对象的items数，即有多少行。</span><br><span class="line">// res: Long = 3</span><br><span class="line"></span><br><span class="line">textFile.first() // 返回RDD对象的第一个item，即第一行</span><br><span class="line">// res: String=hello world !</span><br><span class="line"></span><br><span class="line">// 使用filter转换，返回一个新的RDD</span><br><span class="line">val linesWithJump = textFile.filter(line =&gt; line.contains(&quot;jump&quot;))</span><br><span class="line">// linesWithJump: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[4] at filter at &lt;console&gt;:29</span><br><span class="line"></span><br><span class="line">// 链式操作，转化+求和</span><br><span class="line">val count = textFile.filter(line =&gt; line.contains(&quot;jump&quot;)).count()</span><br></pre></td></tr></table></figure>
+<h3 id="创建第一个-scala-程序"><a href="#创建第一个-scala-程序" class="headerlink" title="创建第一个 scala 程序"></a>创建第一个 scala 程序</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package top.ljming.insist.model</span><br><span class="line"></span><br><span class="line">import org.apache.spark.&#123;SparkConf, SparkContext&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line">  * @author lijiangming</span><br><span class="line">  */</span><br><span class="line"></span><br><span class="line">object SimpleApp &#123;</span><br><span class="line"></span><br><span class="line">  def main(args: Array[String]) &#123;</span><br><span class="line"></span><br><span class="line">    val reademeFile = &quot;D:\\develop-tools\\spark-1.6.1-bin-hadoop2.6\\README.md&quot;</span><br><span class="line">    val conf = new SparkConf().setAppName(&quot;Simple Application&quot;)</span><br><span class="line">    val sc = new SparkContext(conf)</span><br><span class="line">    val readmeData = sc.textFile(reademeFile, 2).cache()</span><br><span class="line">    val numAs = readmeData.filter(line =&gt; line.contains(&quot;a&quot;)).count()</span><br><span class="line">    val numBs = readmeData.filter(line =&gt; line.contains(&quot;b&quot;)).count()</span><br><span class="line">    print(&quot;Lines with a: %s, Line with b: %s&quot;.format(numAs, numBs))</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Spark-编程指南"><a href="#Spark-编程指南" class="headerlink" title="Spark 编程指南"></a>Spark 编程指南</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Spark 应用程序由一个在集群上运行着用户的 main 函数和执行各种秉性操作的 driver program(驱动程序)组成。Spark 提供的主要是一个弹性分布式数据集。</p>
+<p>RDD: 弹性分布式数据集，是一个可以执行并行操作且跨集群节点的元素集合。</p>
+<p>Spark 支持两种类型的共享变量： broadcast variables(广播变量)，它可以用于在所有节点上缓存一个值；accumulators(累加器)，它是一个只能被 “added” 的变量，例如 counters 和 sums。</p>
+<h3 id="Spark-依赖"><a href="#Spark-依赖" class="headerlink" title="Spark 依赖"></a>Spark 依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">groupId = org.apache.spark</span><br><span class="line">artifactId = spark-core_2.11</span><br><span class="line">version = 2.2.0</span><br></pre></td></tr></table></figure>
+<h3 id="Spark-初始化"><a href="#Spark-初始化" class="headerlink" title="Spark 初始化"></a>Spark 初始化</h3><p>首先要创建一个 SparkContext 对象，它会告诉 Spark 如何访问集群。为了创建 SparkContext 需要构建一个包含应用程序信息的 SparkConf 对象。每个 JVM 可能只能激活一个 SparkContext，所以在创建新对象之前，必须调用 stop() 方法停止活跃的 SparkContext。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val conf = new SparkConf().setAppName(appName).setMaster(master)</span><br><span class="line">val sparkContext = new SparkContext(conf)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>appName 集群 UI 上展示应用程序的名称。</li>
+<li>master 是一个 Spark、Mesos或 YRAN 集群的 URL 地址。</li>
+</ul>
+<p>这里指定 local 表示在 local mode 中运行，在实际工作中，不会这样给 master 硬编码，而是通过 spark-submit 启动应用程序来接受它。</p>
+<h3 id="shell-的使用"><a href="#shell-的使用" class="headerlink" title="shell 的使用"></a>shell 的使用</h3><p>在 shell 中，一个特殊的 interpreter-aware (可用的解析器) SparkContext 已经创建好了，称之为 sc 变量。创建自己的 SparkContext 将不起作用。</p>
+<ul>
+<li>–master: 设置 SparkContext 连接到哪一个 master 上。</li>
+<li>–jar: 传递一个逗号分隔的列表来添加 jars 到 classpath 中。</li>
+<li>–packages: 用逗号分隔的 maven coordinates(maven 坐标) 方式来添加依赖到 shell session 中。</li>
+<li>–repositories: 添加依赖仓库。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./bin/spark-shell --master local[4]</span><br><span class="line"></span><br><span class="line">./bin/spark-shell --master local[4] --jars code.jar</span><br><span class="line"></span><br><span class="line">./bin/spark-shell --master local[4] --packages &quot;org.examples:example:0.1&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="弹性分布式数据集-RDDS"><a href="#弹性分布式数据集-RDDS" class="headerlink" title="弹性分布式数据集 (RDDS)"></a>弹性分布式数据集 (RDDS)</h2><p>Spark 主要以一个弹性分布式数据集的概念为中心，它是一个容错且可以执行并行操作的元素的集合。有两种方法可以创建RDD：driver program 中 parallelizing 一个已存在的集合。或者在外部存储系统中引用一个数据集，例如，一个共享文件系统，HDFS、HBase或者提供 Hadoop InputFormat 的任何数据源。</p>
+<h3 id="并行集合"><a href="#并行集合" class="headerlink" title="并行集合"></a>并行集合</h3><p>通过调用 SparkContext 的 parallelize 方法来常见并行集合。该集合的元素可以从一个可以并行操作的 distribute dataset 中复制到另一个 dataset（数据集） 中去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">val data = Array(1, 2, 3, 4, 5)</span><br><span class="line">//data: Array[Int] = Array(1, 2, 3, 4, 5)</span><br><span class="line"></span><br><span class="line">val distData = sc.parallelize(data)</span><br><span class="line">//distData: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[2] at //parallelize at &lt;console&gt;:29</span><br><span class="line"></span><br><span class="line">distData.reduce((a, b) =&gt; a + b)</span><br></pre></td></tr></table></figure>
+<p>并行集合中一个重要的参数是 partitions 的数量，它用来切割 dataset。Spark 将在集群中的每个分区上运行一个任务。</p>
+<h3 id="外部数据集"><a href="#外部数据集" class="headerlink" title="外部数据集"></a>外部数据集</h3><p>Spark 可以从 hadoop 所支持的任何存储源中创建 distributed dataset，包括本地文件系统、HDFS、Cassandra、HBASE、Amazon S3等。Spark 支持文本文件，SequenceFiles，以及任何其他的 Hadoop InputFormat。</p>
+<p>可以使用 SparkContext 的 textFile 方法来创建文本文件的 RDD。此方法需要有一个文件的 URI，并且读取它们作为一个 lines 的集合。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val distFile = sc.textFile(&quot;data.txt&quot;)</span><br></pre></td></tr></table></figure>
+<p>除了文本文件外，Spark 的 Scala API 也支持一些其他的数据格式：</p>
+<ul>
+<li><p>SparkContext.wholeTextFiles 可以读取包含多个小文本的目录，并返回它们的每个（filename，content）对，这与 textFile 形成对比，它的每一个文件中的每一行将返回一个记录。</p>
+</li>
+<li><p>针对 SequenceFiles ，使用 SparkContext 的 SequenceFile[K, V]方法，其中 K 和 V 指的是它们在文件中的类型。</p>
+</li>
+<li><p>针对其它的 Hadoop InputFormats，您可以使用 SparkContext.hadoopRDD 方法，它接受一个 JobConf 和 input format 类。通过相同的方法可以设置你 Hadoop Job 的输入源。</p>
+</li>
+<li><p>RDD.saveAsObjectFile 和 SparkContext.objectFile 支持使用简单的序列化的 Java Object 来保存 RDD。虽然不想 Avro 这种专用的格式一样高效，但是其提供了一种更简单的方式来保存任何的 RDD。</p>
+</li>
+</ul>
+<h2 id="RDD-操作"><a href="#RDD-操作" class="headerlink" title="RDD 操作"></a>RDD 操作</h2><p>RDD 支持两种类型的操作：</p>
+<ul>
+<li>transformation： 在一个已存在的 dataset 上创建一个新的 dataset</li>
+<li>actions: 将在 dataset 上运行的计算结果返回到驱动程序。</li>
+</ul>
+<p>Spark 中的所有 transformations 都是 lazy（懒加载）的，只有当需要返回结果给驱动程序时，transformations 才开始计算。 这种设计使得 Spark 的运行更高效。</p>
+<h3 id="传递函数给-Spark"><a href="#传递函数给-Spark" class="headerlink" title="传递函数给 Spark"></a>传递函数给 Spark</h3><p>当驱动程序在集群上运行时，Spark 的 API 很大程度上依赖于传递函数。有2种推荐方式来做到这点。</p>
+<ul>
+<li>匿名函数的语法Anonymous function syntax， 它可以用于短的代码片段。</li>
+<li>在全局单例对象中的静态方法。例如，你可以定义对象 MyFunctions 传递 MyFunctions.fun1, 具体如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">object MyFunctions &#123;</span><br><span class="line">    def func1(s: Sttring): String = &#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">myRdd.map(MyFunctions.func1)</span><br></pre></td></tr></table></figure>
+<h3 id="打印-RDD-的元素"><a href="#打印-RDD-的元素" class="headerlink" title="打印 RDD 的元素"></a>打印 RDD 的元素</h3><p>常见的用于打印 RDD 的所有元素使用 rdd.foreach(println) 或 rdd.map(println)。然而，在集群 cluster 模式下，stdout 输出正在执行写操作 executors 的 stdout 代替，而不是在一个驱动程序上，因此 stdout 的 driver 程序不会显示这些。 要打印 driver 程序的所有元素，可以使用 collect() 方法首先把 RDD 放到 driver 程序节点上: rdd.collect().foreach(println)。 这可能导致 driver 程序内存耗尽，因为 collect() 获取整个 RDD 到一台机器如果你只需要<br>打印 RDD 的几个元素，一个更安全的方法是使用 take(): rdd.take(100).foreach(println)。</p>
+<h2 id="共享变量"><a href="#共享变量" class="headerlink" title="共享变量"></a>共享变量</h2><p>通常情况下，一个传递给 Spark 操作的函数 func 是在远程的集群节点上执行的。该函数 func 在多个节点执行过程中使用的变量，使用一个变量的多个副本。这些变量以副本的形式拷贝到每个机器上，并且各个远程机器上变量的更新并不会传播到 driver program。 通用且支持 read-write 的共享变量在任务间是不能胜任的。所以，Spark 提供了两种特定类型的共享变量: broadcast variables(广播变量)和 accumulators(累加器)。</p>
+<h3 id="广播变量"><a href="#广播变量" class="headerlink" title="广播变量"></a>广播变量</h3><p>Spark 的 actio 操作是通过一系列的 stage 进行执行的，这些 stage 是通过分布式的 <code>shuffle</code> 操作进行拆分的。</p>
+<p>Spark 会自动广播出每个 stage 内任务所需要的公共数据。这种情况下广播的数据使用序列化的形式进行缓存，并在每个任务运行前进行反序列化。</p>
+<p>广播变量通过在一个变量 <code>V</code> 上调用 <code>SparkContext.broadcast(v)</code> 方法进行创建。广播变量是 <code>V</code>  的一个 <code>wrapper</code>（包装器），可以通过调用 <code>value</code> 方法来访问它的值，代码示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">val broadcast = sc.broadcast(Array((1, 2, 3))</span><br><span class="line">//broadcastVar: org.apache.spark.broadcast.Broadcast[Array[Int]] = Broadcast(0)</span><br><span class="line"></span><br><span class="line">broadcastVar.value</span><br><span class="line"></span><br><span class="line">res0: Array[Int] = Array(1, 2, 3)</span><br></pre></td></tr></table></figure>
+<h3 id="Accumulators-累加器"><a href="#Accumulators-累加器" class="headerlink" title="Accumulators (累加器)"></a>Accumulators (累加器)</h3><p>这是一个仅可以执行 <code>added</code> 的变量来通过一个关联和交换操作，因此可以高效地执行并行操作。累加器可以<br>用于实现counter（计数，类似在 MapReduce 中的那样）或者 sums (求和)。</p>
+<p>可以通过调用 SparkContext.longAccumulator() 或 SparkContext.doubleAccumulator() 方法创建数值类型的 accumulator 以分别累加 Long 和 Double 类型的值。集群上正在<br>运行的任务就可以使用 add 方法来累加数值，但是不能读取值，只有在 driver program 才可以使用 value 方法读取累加器的值。</p>
+<p>一个展示 accumulator 被用于对一个数字中的元素求和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">val accum = sc.longAccumulator()</span><br><span class="line"></span><br><span class="line">sc.parallelize(Array(1, 2, 3, 4)).foreach(x =&gt; accum.add(x))</span><br><span class="line"></span><br><span class="line">accum.value</span><br></pre></td></tr></table></figure>
+<h2 id="部署应用到集群中"><a href="#部署应用到集群中" class="headerlink" title="部署应用到集群中"></a>部署应用到集群中</h2><p>在将应用打包成一个 JAR 或者一组 <code>.py</code>, <code>.zip</code> 文件后，就可以通过 <code>bin/spark-submit</code> 脚本将应用提交到任何支持的集群管理器中。</p>
+<h3 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h3><p>Spark 可以友好的使用流行的单元测试框架进行单元测试。在将 master url 设置为 local 来测试时会简单的创建一个 SparkContext，运行你的操作，然后调用 SparkContext.stop() 方法将该作业停止。因为 Spark 不支持在同一个程序中并行的运行两个 contexts，所以需要确保使用 <code>finally</code> 块或则测试框架的 <code>tearDown</code> 方法将 context 停止。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ljming.top/2017/12/08/spark-入门/" data-id="cjq7sqp1m002a375syh4224lr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/03/python爬虫_part1_urllib库/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          python 爬虫学习 part1-urllib 库的使用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/11/30/maven-study/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Maven 使用介绍</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 12.5px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 10px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 15px;">Spark</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 17.5px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12.5px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/12/28/rocketmq之broker源码学习/">rocketmq之broker源码学习</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/sparkTransformation-Actions/">spark transformation 和 actions 操作</a>
+          </li>
+        
+          <li>
+            <a href="/2018/11/05/spark-sparkSQL/">spark SQL 编程入门</a>
+          </li>
+        
+          <li>
+            <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/">python 爬虫实战之-百度联想词抓取</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/">python爬虫_part6_scrapy架构学习</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
