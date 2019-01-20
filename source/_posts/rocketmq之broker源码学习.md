@@ -4,9 +4,10 @@ date: 2018-12-28 16:28:48
 categories: 消息队列
 tags:
 - RocketMQ
+- broker
 ---
 
-rocketmq之broker解析.
+rocketmq之 broker 源码解析.
 
 <!--more-->
 
@@ -52,7 +53,7 @@ broker的启动，由BrokerStartup处理，直接执行该类的main方法。bro
 - BrokerController 启动
 
 BrokerStartup.main()
-```
+```java
 public static void main(String[] args) {
     start(createBrokerController(args));
 }
@@ -83,7 +84,7 @@ public static BrokerController start(BrokerController controller) {
 ### BrokerController.initialize()
 
 第一步，加载落盘的文件信息。
-```
+```java
 result = result && this.topicConfigManager.load(); // 加载topic信息
 
 result = result && this.consumerOffsetManager.load(); // 加载consumerOffset信息
@@ -133,7 +134,7 @@ broker落盘的数据保存目录结构，存储路径为 ${home}/store
 
 注册处理器的实现：
 
-```
+```java
 public void registerProcessor(int requestCode, NettyRequestProcessor processor, ExecutorService executor) {
     ExecutorService executorThis = executor;
     if (null == executor) {
@@ -153,7 +154,7 @@ Pair对象类型与hashmap，key-value的数据格式，这里 key 为处理器�
 
 broker 的启动，具体实现在 BrokerController.start() 里。
 
-```
+```java
 public void start() throws Exception {
     if (this.messageStore != null) {
         this.messageStore.start();
@@ -213,7 +214,7 @@ messageStore 有两种实现，DefaultMessageStore 和 AbstractPluginMessageStor
 
 **DefaultMessageStore.start()**
 
-```
+```java
 public void start() throws Exception {
     this.flushConsumeQueueService.start();
     this.commitLog.start();
@@ -268,7 +269,7 @@ public void start() throws Exception {
 
 #### SendMessageProcessor.processRequest(ChannelHandlerContext ctx, RemotingCommand request);
 
-```
+```java
 public RemotingCommand processRequest(ChannelHandlerContext ctx,
                     RemotingCommand request) throws RemotingCommandException {
     SendMessageContext mqtraceContext;
@@ -299,7 +300,7 @@ public RemotingCommand processRequest(ChannelHandlerContext ctx,
 
 #### message 落盘
 
-```
+```java
 private RemotingCommand sendMessage(final ChannelHandlerContext ctx,
                                 final RemotingCommand request,
                                 final SendMessageContext sendMessageContext,
@@ -325,7 +326,7 @@ private RemotingCommand sendMessage(final ChannelHandlerContext ctx,
 
 在broker的初始化过程中，rocketmq 将PullMessageExecutor注册到了remotingServer，对应的线程池是 pullMessageExecutor，对应的RequestCode是PULL_MESSAGE=11;具体处理消息拉取的逻辑在PullMessageExecutor.processRequest()方法中。
 
-```
+```java
 private RemotingCommand processRequest(final Channel channel, RemotingCommand request, boolean brokerAllowSuspend)
     throws RemotingCommandException {
     RemotingCommand response = RemotingCommand.createResponseCommand(PullMessageResponseHeader.class);
@@ -595,7 +596,7 @@ private RemotingCommand processRequest(final Channel channel, RemotingCommand re
 
 broker处理消息的拉取，是基于长轮询的策略。结合上面说到消息的拉取，如果当前拉取请求没有拿到数据，当前请求将会被挂起。此时，PullRequestHoldService服务会将当前这个请求存入内存--key为`topic@queueId`，value为PullRequest的map中。当PullRequestHoldService启动后，会从缓存中取出被挂起的请求，基于长轮询的策略，请求会被挂起1000ms*5，这样可以避免客户端向服务端发送无效的请求，_当broker检测到有新的消息到达时，会立即发出通知_（调用PullRequestHoldService的notifyMessageArriving方法）。然后PullRequestHoldService服务将这个请求再次发送给PullMessageProcessor处理器，进行处理。
 
-```
+```java
 public void run() {
     log.info("{} service started", this.getServiceName());
     while (!this.isStopped()) {
@@ -692,7 +693,7 @@ public void notifyMessageArriving(final String topic, final int queueId, final l
 
 上面说到，第一次没有拉取到消息，当前请求会被挂起，等待5s后在进行请求。那么在等待过程中，如果有新的消息到达，是否需要等待线程被重新唤醒再执行呢？答案是，不需要，如果有新的消息到达，PullRequestHoldService会接收到通知，会立即将当前请求立即执行。Broker在初始化DefaultMessageStore对象时，会给DefaultMessageStore对象的属性messageArrivingListener实例化一个监听器（NotifyMessageArrivingListener）。DefaultMessageStore启动是，会启动一个reputMessageService服务，该服务每一毫秒执行一次（几乎是实时的），执行一个doput操作。
 
-```
+```java
 private void doReput() {
     for (boolean doNext = true; this.isCommitLogAvailable() && doNext; ) {
 
