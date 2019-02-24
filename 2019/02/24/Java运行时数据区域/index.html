@@ -3,23 +3,22 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>python爬虫_part6_scrapy架构学习 | ljming的博客</title>
+  <title>Java运行时数据区域 | ljming的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="这里记录 Scrapy 架构的介绍，及其工作流程。">
-<meta name="keywords" content="爬虫,scrapy">
+  <meta name="description" content="Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。">
+<meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python爬虫_part6_scrapy架构学习">
-<meta property="og:url" content="https://ljm516.github.io/2018/02/27/python爬虫-part6-scrapy架构学习/index.html">
+<meta property="og:title" content="Java运行时数据区域">
+<meta property="og:url" content="https://ljm516.github.io/2019/02/24/Java运行时数据区域/index.html">
 <meta property="og:site_name" content="ljming的博客">
-<meta property="og:description" content="这里记录 Scrapy 架构的介绍，及其工作流程。">
+<meta property="og:description" content="Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。">
 <meta property="og:locale" content="zh">
-<meta property="og:image" content="https://ljm516.github.io/2018/02/27/python爬虫-part6-scrapy架构学习/Scrapy%20架构.png">
-<meta property="og:image" content="https://ljm516.github.io/2018/02/27/python爬虫-part6-scrapy架构学习/Scrapy%20工作流.png">
-<meta property="og:updated_time" content="2018-11-05T15:22:52.616Z">
+<meta property="og:image" content="https://ljm516.github.io/2019/02/24/Java运行时数据区域/运行时数据区域.jpg">
+<meta property="og:updated_time" content="2019-02-24T14:00:01.946Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python爬虫_part6_scrapy架构学习">
-<meta name="twitter:description" content="这里记录 Scrapy 架构的介绍，及其工作流程。">
-<meta name="twitter:image" content="https://ljm516.github.io/2018/02/27/python爬虫-part6-scrapy架构学习/Scrapy%20架构.png">
+<meta name="twitter:title" content="Java运行时数据区域">
+<meta name="twitter:description" content="Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。">
+<meta name="twitter:image" content="https://ljm516.github.io/2019/02/24/Java运行时数据区域/运行时数据区域.jpg">
   
     <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
   
@@ -72,14 +71,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-python爬虫-part6-scrapy架构学习" class="article article-type-post" itemscope="" itemprop="blogPost">
+        <section id="main"><article id="post-Java运行时数据区域" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2018/02/27/python爬虫-part6-scrapy架构学习/" class="article-date">
-  <time datetime="2018-02-27T14:44:39.000Z" itemprop="datePublished">2018-02-27</time>
+    <a href="/2019/02/24/Java运行时数据区域/" class="article-date">
+  <time datetime="2019-02-24T09:21:26.000Z" itemprop="datePublished">2019-02-24</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/python/">python</a>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
   </div>
 
   </div>
@@ -90,7 +89,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      python爬虫_part6_scrapy架构学习
+      Java运行时数据区域
     </h1>
   
 
@@ -98,50 +97,25 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>这里记录 Scrapy 架构的介绍，及其工作流程。</p>
+        <p>Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。</p>
 <a id="more"></a>
-<h2 id="Scrapy-核心架构"><a href="#Scrapy-核心架构" class="headerlink" title="Scrapy 核心架构"></a>Scrapy 核心架构</h2><p> <img src="/2018/02/27/python爬虫-part6-scrapy架构学习/Scrapy 架构.png" alt="Scrapy 架构"></p>
-<ul>
-<li>Scrapy 引擎</li>
-<li>调度器</li>
-<li>下载器</li>
-<li>下载中间件</li>
-<li>spider</li>
-<li>爬虫中间件</li>
-<li>实体管道</li>
-</ul>
-<h3 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h3><h3 id="Scrapy-引擎"><a href="#Scrapy-引擎" class="headerlink" title="Scrapy 引擎"></a>Scrapy 引擎</h3><p>是整个 Scrapy 架构的核心。负责控制整个数据的处理流程，以及触发一些事物处理。对各项组件进行控制及协调。</p>
-<h3 id="调度器"><a href="#调度器" class="headerlink" title="调度器"></a>调度器</h3><p>主要实现存储待爬取的网址，并确定这些网址的优先级，决定下一次爬取那个网址。</p>
-<h3 id="下载器"><a href="#下载器" class="headerlink" title="下载器"></a>下载器</h3><p>主要实现对网络上要爬取的页面资源进行高速下载，由于该组件需要通过网络进行大量数据的传输，所以该组件的压力负担一般会比其他组件中。</p>
-<h3 id="下载中间件"><a href="#下载中间件" class="headerlink" title="下载中间件"></a>下载中间件</h3><p>是处于下载器和 Scrapy 引擎之间的一个特定的组件，主要用于对下载器和 Scrapy 引擎之间的通信进行处理，在下载中间件中，可以加入自定义代码，轻松地实现 Scapy 功能的扩展。加入的自定义代码，会在 Scrapy 引擎与下载器通信的时候调用。</p>
-<h3 id="Spiders"><a href="#Spiders" class="headerlink" title="Spiders"></a>Spiders</h3><p>也叫爬虫组件，是 Scrapy 框架中爬虫实现的核心。在一个 Scrapy 项目中，可以用多个 spider，每个 spider 可以负责一个或多个特定的网站。</p>
-<h3 id="爬虫中间件"><a href="#爬虫中间件" class="headerlink" title="爬虫中间件"></a>爬虫中间件</h3><p>是处于 Scrapy 引擎与爬虫组件之间的一个特定的组件，主要用于对爬虫组件和 Scrapy 引擎之间的通信进行处理。也可以在爬虫中间件加入一些自定义的代码，实现 Scrapy 功能的扩展。 加入的自定义代码，在 Scrapy 引擎与爬虫组件之间进行通信的时候调用。</p>
-<h3 id="实体管道"><a href="#实体管道" class="headerlink" title="实体管道"></a>实体管道</h3><p>主要用于接收 spider 组件中提取出来的元素，接收后，会对这些元素进行对应的处理，如: 清洗， 验证， 存储等。</p>
-<h2 id="Scrapy-工作流"><a href="#Scrapy-工作流" class="headerlink" title="Scrapy 工作流"></a>Scrapy 工作流</h2><p> <img src="/2018/02/27/python爬虫-part6-scrapy架构学习/Scrapy 工作流.png" alt="Scrapy 工作流"></p>
-<p>首先， Scrapy 引擎会将爬虫文件中设置的要爬取的起始网址（默认在 start_urls 属性中设置）传递到调度器中。随后执行 1-13 步骤。</p>
-<ol>
-<li>主要将下一次要爬取的网址传递给 Scrapy 引擎，调度器是一个优先队列，里面可能存储着多个要爬取的网址（也有可能是一个），调度器会根据各网址的优先级分析出下一次要爬取的网址，然后再传递给 Scrapy 引擎。</li>
-<li>Scrapy 引擎接收到 1 中传过来的网址之后，过程 2 Scrapy 引擎主要将网址传递给下载中间件。</li>
-<li>下载中间件，接收到 Scrapy 引擎传过来的网址之后，过程 3 中下载中间件会将对应的网址传递给下载器。</li>
-<li>然后，下载器接收到对应要下载的网址，然后过程 4 会向互联网对应的网址发送 request 请求，进行网页下载。</li>
-<li>互联网中对应的网址接收到 request 请求后，会有相应的 response 响应，随后在过程 5 中将响应返回给下载器。</li>
-<li>下载器接收响应之后，即完成了对应网页的下载，随后过程 6 会将对应的响应传递给下载中间件。</li>
-<li>下载中间件接收到对应响应后，会与 Scrapy 引擎进行通信，过程 7 会将对应的 response 响应传递给 Scrapy 引擎。</li>
-<li>Scrapy 引擎接收到 reponse 响应之后，过程 8 Scrapy 引擎会将 response 响应信息传递给爬虫中间件。</li>
-<li>爬虫中间件接收到对应响应之后，过程 9 爬虫中间件会将响应传递给对应的爬虫进行处理。</li>
-<li>爬虫进行处理之后，大致会有两方面的信息: 提取出来的数据和新的请求信息。然后，过程 10 爬虫会将处理后的信息传递给爬虫中间件。</li>
-<li>爬虫中间件接收到爬虫处理后的信息之后，过程 11 会将对应信息传递到 Scrapy 引擎。</li>
-<li>会同时进行过程 12 和 过程 13。 在过程 12 中，Scrapy 引擎会将提取出来的元素传递给实体管道，由实体管道对提取出来的信息进行进一步的处理: 过程 13 中，Scrapy 引擎会将爬虫处理后得到的新的信息传递给调度器，由调度器进行进一步网址的调度。</li>
-</ol>
-<p>随后，再重复执行 1-13 步骤，一直到调度器中没有网址调度或者异常退出为止。</p>
+<p>Java虚拟机所管理的内存划分如下图所示：</p>
+<p><img src="/2019/02/24/Java运行时数据区域/运行时数据区域.jpg" alt="运行时数据区域"></p>
+<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>线程私有的，看作是当前线程所执行的字节码的行号指示器。在虚拟机的概念模型里，字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
+<h2 id="Java虚拟机栈"><a href="#Java虚拟机栈" class="headerlink" title="Java虚拟机栈"></a>Java虚拟机栈</h2><p>线程私有的，生命周期和线程相同。描述的是Java方法执行的内存模型：每个方法在执行的同时会创建一个栈帧，用于存储局部变量表、操作数栈、动态链接、方法出口灯信息。每个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机中入栈到出栈的过程。</p>
+<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p>和虚拟机栈非常相似，不同之处在于，虚拟机栈执行Java方法服务，本地方法栈则为虚拟机调用Native方法服务。</p>
+<h2 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h2><p>Java虚拟机所管理的内存中最大的一块，所有线程共享，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。是垃圾收集管理的主要区域。</p>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>线程共享，用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码的数据。</p>
+<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h2><p>方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池存放。</p>
+<h2 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h2><p>并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。JDK1.4新加入的NIO，引入了一种基于通道（channel）于缓冲区的I/O方式，它可以使用Native函数库直接分配堆外内存，然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用来操作。这样能在一些场景中显著提供性能，因为避免了在Java堆的Native堆中来回复制数据。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2018/02/27/python爬虫-part6-scrapy架构学习/" data-id="cjsj3f18z000muks6su3i41p1" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/02/24/Java运行时数据区域/" data-id="cjsj3f18i0001uks6aco4gun1" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
 
     </footer>
   </div>
@@ -149,19 +123,19 @@
     
 <nav id="article-nav">
   
-    <a href="/2018/04/19/python爬虫实战-百度搜索联想词抓取/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/02/24/Java垃圾收集/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          python 爬虫实战之-百度联想词抓取
+          Java垃圾收集
         
       </div>
     </a>
   
   
-    <a href="/2018/02/22/python爬虫_part5_scrapy框架学习之XML&CSV/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/01/06/rocketmq之consumer消息消费者/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">python爬虫_part5_scrapy框架学习之处理不同格式文件</div>
+      <div class="article-nav-title">rocketmq之consumer消息消费者</div>
     </a>
   
 </nav>
