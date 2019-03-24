@@ -16,7 +16,8 @@
 <meta property="og:image" content="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/producer启动.jpg">
 <meta property="og:image" content="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/producer发送消息.jpg">
 <meta property="og:image" content="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/延迟策略.jpg">
-<meta property="og:updated_time" content="2019-03-20T08:58:23.069Z">
+<meta property="og:image" content="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/RocketMQ之Producer.jpg">
+<meta property="og:updated_time" content="2019-03-24T14:16:28.611Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="rocketmq之producer消息发送者">
 <meta name="twitter:description" content="rocketmq之消息发送者 producer 源码解析.">
@@ -156,11 +157,16 @@
 <h3 id="④发送消息的核心实现"><a href="#④发送消息的核心实现" class="headerlink" title="④发送消息的核心实现"></a>④发送消息的核心实现</h3><p>经过②③的关键两步，确定了当前这条消息要发送到那个broker上。接下来就是消息发送的具体实现。Producer和broker基于长连接的模式，将消息发送到broker上，Producer给broker发送消息的请求码为<code>RequestCode.SEND_MESSAGE=10</code>。这里需要说明的是：SYNC模式需要等待broker接收消息，存储完成，如果Boker是SYNC_MASTER，还需要等待主从完成，才会返回消息。ASYNC模式不会等待broker返回结果，但是通过CallBack自我实现消息成功或失败通知。Oneway模式只管发送消息，不管broker接收成功与否（有点类似UDP的请求）。</p>
 <h3 id="⑤进行发送延迟故障更新"><a href="#⑤进行发送延迟故障更新" class="headerlink" title="⑤进行发送延迟故障更新"></a>⑤进行发送延迟故障更新</h3><p>消息在发送过程，会记录发送开始时间以及结束时间，两者的差值就是当前消息发送的延迟时间（②③④过程花费的时间）。然后会根据延迟时间，算出broker不可用时间。</p>
 <p><img src="/2019/01/03/rocketmq之producer消息发送者/延迟策略.jpg" alt="延迟策略"></p>
-
+<h2 id="全体流程图"><a href="#全体流程图" class="headerlink" title="全体流程图"></a>全体流程图</h2><p><img src="/2019/01/03/rocketmq之producer消息发送者/RocketMQ之Producer.jpg" alt="整体流程"></p>
+<h2 id="follow-up"><a href="#follow-up" class="headerlink" title="follow up"></a>follow up</h2><h3 id="启动producer的时候，拉取消息的服务"><a href="#启动producer的时候，拉取消息的服务" class="headerlink" title="启动producer的时候，拉取消息的服务"></a>启动producer的时候，拉取消息的服务</h3><h3 id="启动的时候什么时候和namesrv交互，选那台机器"><a href="#启动的时候什么时候和namesrv交互，选那台机器" class="headerlink" title="启动的时候什么时候和namesrv交互，选那台机器"></a>启动的时候什么时候和namesrv交互，选那台机器</h3><p>producer启动的时候，会启动一系列的定时任务，其中包含一个定时向NameSrv更新topic路由信息的定时任务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.scheduledExecutorService.scheduleAtFixedRate(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MQClientInstance.<span class="keyword">this</span>.updateTopicRouteInfoFromNameServer();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(<span class="string">"ScheduledTask updateTopicRouteInfoFromNameServer exception"</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="number">10</span>, <span class="keyword">this</span>.clientConfig.getPollNameServerInterval(), TimeUnit.MILLISECONDS);</span><br></pre></td></tr></table></figure>
+<p>它会将producer发布的topic，去namesrv获取路由数据，获取到的路由数据中包含了broker地址，然后本地缓存的发布路由信息比较，发现发生了改变，然后会对本地缓存发布路由信息进行更新，继而更新了本地缓存的broker地址信息。producer发送心跳到broker就是从这里获取到的地址，在没有从NameSrv中更新到路由信息之前，producer的broker缓存为空，无法给broker发送心跳。</p>
+<p>关于如果选择namesrv地址，producer启动之前，会设置namesrv地址，然后会将namesrv地址放到内存中。在producer和namesrv进行交互时，会创建和namesrv交互的channel，第一创建时，会将namesrv地址放到一个叫namesrvAddrChoosed的缓存，然后根据地址创建channel。</p>
+<h3 id="动态扩容"><a href="#动态扩容" class="headerlink" title="动态扩容"></a>动态扩容</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/" data-id="cjth4c2y50034vffy9uxv0gxg" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/" data-id="cjtn03wjl0030ggs6zv3wkupt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/producer/">producer</a></li></ul>
