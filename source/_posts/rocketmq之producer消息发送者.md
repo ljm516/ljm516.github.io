@@ -162,6 +162,7 @@ private TopicPublishInfo tryToFindTopicPublishInfo(final String topic) {
 ①处从缓存topicPublishInfoTable中获取，首次获取肯定为空。然后就会new一个TopicPublishInfo对象，放入缓存，②然后更新NameSrv的TopicPublishInfo。如果②中获取的TopicPublishInfo可用，直接返回，否者进入④逻辑。②和④的区别在于前者是通过具体的topic去nameSrv获取TopicPublishInfo，后者是通过默认的topic去nameSrv获取TopicPublishInfo。也可以说明，在tryToFindTopicPublishInfo实现中，首先使用指定的topic查找，如果没有找到，使用默认的topic查找路由信息。
 
 源码分析`updateTopicRouteInfoFromNameServer(final String topic, boolean isDefault, DefaultMQProducer defaultMQProducer)`
+
 ```java
 public boolean updateTopicRouteInfoFromNameServer(final String topic, boolean isDefault, DefaultMQProducer defaultMQProducer) {
     try {
@@ -293,15 +294,14 @@ public MessageQueue selectOneMessageQueue(final TopicPublishInfo tpInfo, final S
 
     return tpInfo.selectOneMessageQueue(lastBrokerName); // ②
 }
-```    
+```
 
 ①判断是否启用发送延迟故障，否的话直接进行②逻辑。②的实现，直接从messageQueueList中选取一个MessageQueue返回，也不关心当前Broker是否可用（比如当前时间Broker挂了）。
-
 如果①启动了发送延迟故障，那么就会考虑broker的可用性。这里面的if分支，首先从ThreadLocal中获取本次要发送的MessageQueue的下标，然后③进行循环MessageQueueList，这么做的理由是确保所选的messageQueue的broker是可用的，如果本次不可用，循环出最终可用的那个messageQueue。
-
 ④进行判断当前MessageQueue的Broker是否可用，需要理解发送消息延迟机制。
 
-**延迟策略**
+#### 延迟策略
+
 ```java
 private boolean sendLatencyFaultEnable = false;
 private long[] latencyMax = {50L, 100L, 550L, 1000L, 2000L, 3000L, 15000L}; // 最大延迟时间
@@ -322,6 +322,7 @@ private long computeNotAvailableDuration(final long currentLatency) {
     return 0;
 }
 ```
+
 在计算出broker不可用时长后，放入缓存中的FaultItem设置的startTimestamp=当前时间+notAvailableDuration。在判断当前broker是否可用的条件就是当前时间是否大于startTimestamp。
 
 ⑤表示当前所有的broker都处于不可用状态，那么这里的处理逻辑是从保存不可用broker信息的缓存中，根据时间排序，startTimestamp最小的那个将会被选择。这是获取到的broker也不是一定不可用，也许在这个期间，broker被运维修复了。
@@ -338,3 +339,31 @@ private long computeNotAvailableDuration(final long currentLatency) {
 
 ![延迟策略](延迟策略.jpg)
 
+## 全体流程图
+
+![整体流程](RocketMQ之Producer.jpg)
+
+## follow up
+
+### 启动producer的时候，拉取消息的服务
+
+### 启动的时候什么时候和namesrv交互，选那台机器 
+producer启动的时候，会启动一系列的定时任务，其中包含一个定时向NameSrv更新topic路由信息的定时任务。
+
+```java
+this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+
+    @Override
+    public void run() {
+        try {
+            MQClientInstance.this.updateTopicRouteInfoFromNameServer();
+        } catch (Exception e) {
+            log.error("ScheduledTask updateTopicRouteInfoFromNameServer exception", e);
+        }
+    }
+}, 10, this.clientConfig.getPollNameServerInterval(), TimeUnit.MILLISECONDS);
+```
+它会将producer发布的topic，去namesrv获取路由数据，获取到的路由数据中包含了broker地址，然后本地缓存的发布路由信息比较，发现发生了改变，然后会对本地缓存发布路由信息进行更新，继而更新了本地缓存的broker地址信息。producer发送心跳到broker就是从这里获取到的地址，在没有从NameSrv中更新到路由信息之前，producer的broker缓存为空，无法给broker发送心跳。
+
+关于如果选择namesrv地址，producer启动之前，会设置namesrv地址，然后会将namesrv地址放到内存中。在producer和namesrv进行交互时，会创建和namesrv交互的channel，第一创建时，会将namesrv地址放到一个叫namesrvAddrChoosed的缓存，然后根据地址创建channel。
+### 动态扩容
