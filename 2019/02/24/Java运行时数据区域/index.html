@@ -5,19 +5,19 @@
   
   <title>Java运行时数据区域 | ljming的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。">
+  <meta name="description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》关于Java运行时数据区域的笔记。">
 <meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java运行时数据区域">
 <meta property="og:url" content="https://ljm516.github.io/2019/02/24/Java运行时数据区域/index.html">
 <meta property="og:site_name" content="ljming的博客">
-<meta property="og:description" content="Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。">
+<meta property="og:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》关于Java运行时数据区域的笔记。">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://ljm516.github.io/2019/02/24/Java运行时数据区域/运行时数据区域.jpg">
-<meta property="og:updated_time" content="2019-02-24T14:00:01.946Z">
+<meta property="og:updated_time" content="2019-04-23T16:37:44.583Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java运行时数据区域">
-<meta name="twitter:description" content="Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。">
+<meta name="twitter:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》关于Java运行时数据区域的笔记。">
 <meta name="twitter:image" content="https://ljm516.github.io/2019/02/24/Java运行时数据区域/运行时数据区域.jpg">
   
     <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
@@ -97,14 +97,15 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。</p>
+        <p>本文记录阅读周志明老师的《深入理解Java虚拟机》关于Java运行时数据区域的笔记。</p>
 <a id="more"></a>
+<p>Java 虚拟机在执行Java程序的过程中会把它所管理的内存划分为若干个不同的数据区域。这些区域都有各自的用途，以及创建和销毁的时间，有的区域随着虚拟机进程的启动而存在，有些区域则依赖用户现成的启动和结束而建立和销毁。</p>
 <p>Java虚拟机所管理的内存划分如下图所示：</p>
 <p><img src="/2019/02/24/Java运行时数据区域/运行时数据区域.jpg" alt="运行时数据区域"></p>
-<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>线程私有的，看作是当前线程所执行的字节码的行号指示器。在虚拟机的概念模型里，字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
-<h2 id="Java虚拟机栈"><a href="#Java虚拟机栈" class="headerlink" title="Java虚拟机栈"></a>Java虚拟机栈</h2><p>线程私有的，生命周期和线程相同。描述的是Java方法执行的内存模型：每个方法在执行的同时会创建一个栈帧，用于存储局部变量表、操作数栈、动态链接、方法出口灯信息。每个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机中入栈到出栈的过程。</p>
-<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p>和虚拟机栈非常相似，不同之处在于，虚拟机栈执行Java方法服务，本地方法栈则为虚拟机调用Native方法服务。</p>
-<h2 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h2><p>Java虚拟机所管理的内存中最大的一块，所有线程共享，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。是垃圾收集管理的主要区域。</p>
+<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>线程私有的。看作是当前线程所执行的字节码的行号指示器。在虚拟机的概念模型里，字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
+<h2 id="Java虚拟机栈"><a href="#Java虚拟机栈" class="headerlink" title="Java虚拟机栈"></a>Java虚拟机栈</h2><p>线程私有。生命周期和线程相同。描述的是Java方法执行的内存模型：每个方法在执行的同时会创建一个栈帧，用于存储局部变量表、操作数栈、动态链接、方法出口灯信息。每个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机中入栈到出栈的过程。</p>
+<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p>线程私有。和虚拟机栈非常相似，不同之处在于，虚拟机栈执行Java方法服务，本地方法栈则为虚拟机调用Native方法服务。</p>
+<h2 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h2><p>线程共享。Java虚拟机所管理的内存中最大的一块，所有线程共享，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。是垃圾收集管理的主要区域。</p>
 <h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>线程共享，用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码的数据。</p>
 <h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h2><p>方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池存放。</p>
 <h2 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h2><p>并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。JDK1.4新加入的NIO，引入了一种基于通道（channel）于缓冲区的I/O方式，它可以使用Native函数库直接分配堆外内存，然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用来操作。这样能在一些场景中显著提供性能，因为避免了在Java堆的Native堆中来回复制数据。</p>
@@ -112,7 +113,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/02/24/Java运行时数据区域/" data-id="cjtn03who0004ggs67wvjw77k" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/02/24/Java运行时数据区域/" data-id="cjuty0ai30004ef5ssspefz6i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -171,7 +172,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JVM/" style="font-size: 12px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+      <a href="/tags/JVM/" style="font-size: 14px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
     </div>
   </div>
 
@@ -180,7 +181,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
     </div>
   </div>
 
@@ -191,6 +192,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/04/23/HotSpot中的对象/">HotSpot中的对象</a>
+          </li>
         
           <li>
             <a href="/2019/02/27/rocketmq之消息消费及消费失败重试机制/">rocketmq之消息消费及消费失败重试机制</a>
@@ -206,10 +211,6 @@
         
           <li>
             <a href="/2019/01/06/rocketmq之consumer消息消费者/">rocketmq之consumer消息消费者</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/03/rocketmq之producer消息发送者/">rocketmq之producer消息发送者</a>
           </li>
         
       </ul>

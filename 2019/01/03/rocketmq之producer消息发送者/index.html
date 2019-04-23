@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/producer发送消息.jpg">
 <meta property="og:image" content="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/延迟策略.jpg">
 <meta property="og:image" content="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/RocketMQ之Producer.jpg">
-<meta property="og:updated_time" content="2019-03-24T14:16:28.611Z">
+<meta property="og:updated_time" content="2019-03-27T07:16:45.964Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="rocketmq之producer消息发送者">
 <meta name="twitter:description" content="rocketmq之消息发送者 producer 源码解析.">
@@ -162,11 +162,15 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.scheduledExecutorService.scheduleAtFixedRate(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MQClientInstance.<span class="keyword">this</span>.updateTopicRouteInfoFromNameServer();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(<span class="string">"ScheduledTask updateTopicRouteInfoFromNameServer exception"</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="number">10</span>, <span class="keyword">this</span>.clientConfig.getPollNameServerInterval(), TimeUnit.MILLISECONDS);</span><br></pre></td></tr></table></figure>
 <p>它会将producer发布的topic，去namesrv获取路由数据，获取到的路由数据中包含了broker地址，然后本地缓存的发布路由信息比较，发现发生了改变，然后会对本地缓存发布路由信息进行更新，继而更新了本地缓存的broker地址信息。producer发送心跳到broker就是从这里获取到的地址，在没有从NameSrv中更新到路由信息之前，producer的broker缓存为空，无法给broker发送心跳。</p>
 <p>关于如果选择namesrv地址，producer启动之前，会设置namesrv地址，然后会将namesrv地址放到内存中。在producer和namesrv进行交互时，会创建和namesrv交互的channel，第一创建时，会将namesrv地址放到一个叫namesrvAddrChoosed的缓存，然后根据地址创建channel。</p>
-<h3 id="动态扩容"><a href="#动态扩容" class="headerlink" title="动态扩容"></a>动态扩容</h3>
+<h3 id="动态扩容"><a href="#动态扩容" class="headerlink" title="动态扩容"></a>动态扩容</h3><h3 id="实操是遇见的问题"><a href="#实操是遇见的问题" class="headerlink" title="实操是遇见的问题"></a>实操是遇见的问题</h3><ul>
+<li>broker流控问题，发送消息的线程池被干满，如何解决</li>
+<li>broker主从同步问题，为什么conf文件里的slave配置的名称要相同才能同步</li>
+</ul>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/" data-id="cjtn03wjl0030ggs6zv3wkupt" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/" data-id="cjuty0ak0002yef5srz2h8bio" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/producer/">producer</a></li></ul>
@@ -225,7 +229,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JVM/" style="font-size: 12px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+      <a href="/tags/JVM/" style="font-size: 14px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
     </div>
   </div>
 
@@ -234,7 +238,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
     </div>
   </div>
 
@@ -245,6 +249,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/04/23/HotSpot中的对象/">HotSpot中的对象</a>
+          </li>
         
           <li>
             <a href="/2019/02/27/rocketmq之消息消费及消费失败重试机制/">rocketmq之消息消费及消费失败重试机制</a>
@@ -260,10 +268,6 @@
         
           <li>
             <a href="/2019/01/06/rocketmq之consumer消息消费者/">rocketmq之consumer消息消费者</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/03/rocketmq之producer消息发送者/">rocketmq之producer消息发送者</a>
           </li>
         
       </ul>

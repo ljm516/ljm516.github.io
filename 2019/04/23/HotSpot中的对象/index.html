@@ -3,20 +3,24 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>mysql 索引 | ljming的博客</title>
+  <title>HotSpot中的对象 | ljming的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。">
-<meta name="keywords" content="MySQL">
+  <meta name="description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。">
+<meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="mysql 索引">
-<meta property="og:url" content="https://ljm516.github.io/2017/11/09/MySQL索引/index.html">
+<meta property="og:title" content="HotSpot中的对象">
+<meta property="og:url" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/index.html">
 <meta property="og:site_name" content="ljming的博客">
-<meta property="og:description" content="所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。">
+<meta property="og:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2018-11-05T15:22:52.614Z">
+<meta property="og:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/对象创建.jpg">
+<meta property="og:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/句柄.jpg">
+<meta property="og:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/直接指针.jpg">
+<meta property="og:updated_time" content="2019-04-23T16:35:50.460Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mysql 索引">
-<meta name="twitter:description" content="所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。">
+<meta name="twitter:title" content="HotSpot中的对象">
+<meta name="twitter:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。">
+<meta name="twitter:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/对象创建.jpg">
   
     <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
   
@@ -69,14 +73,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-MySQL索引" class="article article-type-post" itemscope="" itemprop="blogPost">
+        <section id="main"><article id="post-HotSpot中的对象" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2017/11/09/MySQL索引/" class="article-date">
-  <time datetime="2017-11-09T08:30:00.000Z" itemprop="datePublished">2017-11-09</time>
+    <a href="/2019/04/23/HotSpot中的对象/" class="article-date">
+  <time datetime="2019-04-23T15:13:24.000Z" itemprop="datePublished">2019-04-23</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
   </div>
 
   </div>
@@ -87,7 +91,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      mysql 索引
+      HotSpot中的对象
     </h1>
   
 
@@ -95,43 +99,39 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>所有MySQL列类型都可以被索引，对相关列使用索引是提高SELECT操作性能的最佳途径。每种存储引擎对每个表至少支持16个索引，总索引长度至少为256字节。</p>
+        <p>本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。</p>
 <a id="more"></a>
+<h2 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h2><p>创建流程</p>
+<p><img src="/2019/04/23/HotSpot中的对象/对象创建.jpg" alt="对象的创建流程"></p>
+<ol>
+<li>没有对象怎么办，那就new一个<br>当虚拟机遇到一个new 指令，会去检查这个指令参数在能否在常量池中定位到一个类的符号，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，则执行类的加载过程。</li>
+<li>为对象分配内存<br>在类加载完成后，对象所需的内存就确定了，为对象分配内存就是在java堆类划出一块确定大小的内存空间。为对象分配空间的算法有两种：指针碰撞和空闲列表。指针碰撞的前提是Java堆中的内存是绝对规整的，用过的内存放在一边，空闲的内存放在另一边，当为新对象分配内存，只需要移动响应内存大小的距离就行。空闲列表需要虚拟机维护一个列表，记录那些内存是可用的，分配内存时，从列表中找到一块足够大的空间划分给对象实例，然后更新列表。Java堆是否规整，由所采用的垃圾收集器是否带有压缩整理功能决定。因此，在使用 Serial、ParNew等带Compact过程的收集器，通常采用指针碰撞算法，而使用CMS这种基于Mark-Sweep算法的收集器时，通常采用空闲列表。</li>
+<li>对象初始化<br>完成上面的步骤，从虚拟机的角度来讲，一个新的对象就产生了，但是从程序角度来说，对象的创建才刚开始，对象的所有属性都是默认值，接下来就是执行init操作，把对象按照程序员的意愿进行初始化。</li>
+</ol>
+<h2 id="对象内存结构"><a href="#对象内存结构" class="headerlink" title="对象内存结构"></a>对象内存结构</h2><p>可分为3块区域：对象头、实例数据、对齐填充。</p>
+<ol>
+<li>对象头<br>分为两部分，第一部分用于存储对象自身的运行时数据，包括哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等。这部分数据长度在32位和64位虚拟机分别是32bit和64bit，官方称之为“Mark word”。第二部分是类型指针，即对象指向它的类元数据的指针，虚拟机通过它能确定这个对象时那个类的实例。</li>
+<li>实例数据<br>对象真正存储的有效信息，程序代码中所定义的各种类型的字段内容。</li>
+<li>对齐填充<br>并不是必然存在，仅仅起占位符的作用。HotSpot虚拟机自动内存管管理系统要求对象起始地址必须是8字节的整数倍，就是对象的大小必须是8字节的整数倍。对象头正好是8字节的整数倍，如果示例数据没有对齐，就需要通过对齐填充补全。<h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2>目前主流的两种定位方式:使用句柄和直接指针。</li>
+</ol>
 <ul>
-<li>语法</li>
+<li>使用句柄<br>Java堆中会划出一块内存作为句柄池，reference中存储的是对象的句柄地址，句柄包含了对象<br>实例数据和类型数据各自的具体地址信息。</li>
 </ul>
-<p>创建索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create [unique|fulltext|spatial] index index_name [using idex_type] on table_name(idex_col_name,....)</span><br></pre></td></tr></table></figure>
-<p>删除索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop index index_name on table_name;</span><br></pre></td></tr></table></figure>
-<h2 id="设计索引原则"><a href="#设计索引原则" class="headerlink" title="设计索引原则"></a>设计索引原则</h2><ul>
-<li>搜索的索引列，不一定是所要选择的列。最适合索引的列是出现在where字句中的列，或连接字句中指定的列，而不是出现在select关键字后的选择列表中的列。</li>
-<li>使用唯一索引。</li>
-<li>使用短索引。</li>
-<li>利用最左前缀。在创建一个n列的索引时，实际是创建了MySQL可利用的n个索引。多列索引可起几个索引的作用，因为可利用索引中最左边的列集来匹配行。这样的列集称为最左前缀。</li>
-<li>不要过度索引。每个额外的索引都要占用额外的磁盘空间，并降低写操作的性能。在修改表的内容时，索引必须进行更新，有时可能需要重构，因此索引越多，所花的时间越长如果一个索引很少利用或者从不使用，那么会不必要地减缓表的修改速度。</li>
-<li>对于InnoDB存储引擎的表，记录默认会按照一定的顺序保存，如果有明确定义的主键，则按照主键顺序保存。如果没有主键，但是有唯一索引，那么就是按照唯一索引的顺序保存。如果没有主键有没有唯一索引，那么表中会自动生成一个内部列， 按照这个列的顺序保存。按照主键或者内部列进行访问时最快的，所以InnoDB表尽量自己指定主键，当表中同时有几个列都是唯一的，都可以作为主键的时候，要选择最长作为访问条件的列作为主键，提高查询的效率。</li>
-</ul>
-<h2 id="BTREE索引和HASH索引"><a href="#BTREE索引和HASH索引" class="headerlink" title="BTREE索引和HASH索引"></a>BTREE索引和HASH索引</h2><p>两种不同的类型的索引各有其不同的适用范围，HASH索引有一些重要的特性需要在使用的时候特别注意。</p>
+<p><img src="/2019/04/23/HotSpot中的对象/句柄.jpg" alt="使用句柄"></p>
 <ul>
-<li>只用于使用=或者&lt;=&gt;操作符的等式比较。</li>
-<li>优化器不能使用HASH索引来加速ORDER BY操作。</li>
-<li>MySQL不能确定在两个值之间大约有多少行。如果将一个MyISAM表改为HASH索引的MEMORY表，会影响一些查询的执行效率。  </li>
-<li>只能使用整个关键字来搜索一行。</li>
+<li>直接指针<br>Java堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而reference中存储的直接就是对象地址</li>
 </ul>
-<p>而对BTREE索引，当使用<code>&lt;</code>,<code>&gt;</code>,<code>&gt;=</code>,<code>&lt;=</code>,<code>BETWEEN</code>,!=或者<code>&lt;&gt;</code>，或者LIKE ‘pattern’操作符时，都可以使用相关列上的索引。</p>
-<p>下列范围查询适合BTREE索引和HASH索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from table_name where key_col = 1 or key_col in (15, 18, 20);</span><br></pre></td></tr></table></figure>
-<p>下列范围查询只适用于BTRR索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from table_name where key_col &gt; 1 and key_col &lt; 10;</span><br><span class="line"></span><br><span class="line">select * from table_name like &apos;ab%&apos; or key_col between &apos;lisa&apos; and &apos;simon&apos;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/04/23/HotSpot中的对象/直接指针.jpg" alt="直接指针"></p>
+<h3 id="两种方法的各自优点"><a href="#两种方法的各自优点" class="headerlink" title="两种方法的各自优点"></a>两种方法的各自优点</h3><p>使用句柄的好处：reference存储的是稳定的句柄地址，对象移动（GC）只会改变句柄中实例数据的数据指针，reference本身不用改变。<br>使用直接指针的最大好处就是快，它节省了一次指针定位的时间开销，在java中对象访问很频繁，这种开销积少成多后也是一项非常可观的执行成本。</p>
+<p>HotSpot虚拟机使用的直接指针的方式进行对象访问的。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2017/11/09/MySQL索引/" data-id="cjuty0ahz0001ef5soc1yt7cj" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/04/23/HotSpot中的对象/" data-id="cjuty0ahu0000ef5sz28f17uo" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
 
     </footer>
   </div>
@@ -139,19 +139,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2017/11/10/工厂模式/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          Java设计模式之工厂模式
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/10/24/mysqldump/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/02/27/rocketmq之消息消费及消费失败重试机制/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">how to back up and restore a mysql database</div>
+      <div class="article-nav-title">rocketmq之消息消费及消费失败重试机制</div>
     </a>
   
 </nav>
