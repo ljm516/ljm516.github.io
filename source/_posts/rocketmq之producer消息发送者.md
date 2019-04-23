@@ -367,3 +367,8 @@ this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
 关于如果选择namesrv地址，producer启动之前，会设置namesrv地址，然后会将namesrv地址放到内存中。在producer和namesrv进行交互时，会创建和namesrv交互的channel，第一创建时，会将namesrv地址放到一个叫namesrvAddrChoosed的缓存，然后根据地址创建channel。
 ### 动态扩容
+
+### 实操是遇见的问题
+
+- broker流控问题，发送消息的线程池被干满，如何解决
+- broker主从同步问题，为什么conf文件里的slave配置的名称要相同才能同步
