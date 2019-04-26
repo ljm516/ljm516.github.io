@@ -1,14 +1,16 @@
 ---
 title: python 爬虫实战之-google related search
 date: 2018-01-15 20:30:00
-categories: python
-tags: 
+categories: Python
+tags:
 - 爬虫
 ---
 
 当你使用 google 搜索某个关键词是，在页面底部会有 `search related to xxx` 模块，这里就实现爬取这个模块给出的关键字。
 
 <!--more-->
+
+**{% post_link python爬虫实战-百度搜索联想词抓取 python爬虫实战-百度搜索联想词抓取 %}**
 
 ```python
 import random

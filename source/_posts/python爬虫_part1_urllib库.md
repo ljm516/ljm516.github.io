@@ -2,12 +2,15 @@
 title: python 爬虫学习 part1-urllib 库的使用
 date: 2018-01-03 22:00:00
 categories: Python
--tag: 爬虫
+tags:
+- 爬虫
 ---
 
 学习 python 爬虫，我是认真的。跟着书本走吧《精通 Python 网络爬虫》
 
 <!--more--> 
+
+**{% post_link python爬虫_part2_正则 python爬虫_part2学习正则 %}**
 
 ### 入门
 

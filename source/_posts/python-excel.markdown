@@ -2,7 +2,8 @@
 title: python 处理 execl 文件
 date: 2018-01-16 17:45:00
 categories: python
--tags: 文件处理 
+tags: 
+- 文件处理 
 ---
 
 python 处理 excel 文件，需要用到第三方库: `xlrd` 和 `xlwt`。 运行 `pip install xlrd`, `pip install xlwt` 添加库支持。

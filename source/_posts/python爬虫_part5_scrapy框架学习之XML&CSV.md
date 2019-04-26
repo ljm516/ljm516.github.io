@@ -1,7 +1,7 @@
 ---
 title: python爬虫_part5_scrapy框架学习之处理不同格式文件
 date: 2018-02-22 22:00
-categories: python
+categories: Python
 tags:
 - 爬虫
 - scrapy 
@@ -10,6 +10,8 @@ tags:
 使用 XMLFeedSpider 处理 xml，使用 CSVFeedSpider 处理 csv。
 
 <!--more-->
+
+**{% post_link python爬虫-part6-scrapy架构学习 python爬虫-part6-scrapy架构学习 %}**
 
 ###  用 XMLFeedSpider 分析 XML 源
 

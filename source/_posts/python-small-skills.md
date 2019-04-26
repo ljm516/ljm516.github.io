@@ -1,8 +1,9 @@
 ---
 title: python 中的一些小技巧合集
 date: 2018-01-31 22:45:00
-categories: python
--tags: notes 
+categories: Python
+tags: 
+- notes 
 ---
 
 这里汇总一些不容易记住语法小技巧。

@@ -1,13 +1,16 @@
 ---
 title: python 爬虫学习 part2-正则表达式
 date: 2018-01-08 22:20:00
-categories: python
--tag: 爬虫
+categories: Python
+tags:
+- 爬虫
 ---
 
 在爬虫网页信息的时候，正则表达式可以匹配你想要的信息。正则在爬虫学习中是很重要的。
 
 <!--more-->
+
+**{% post_link python爬虫_part3_scrapy学习之入门 python爬虫_part3_scrapy学习之入门 %}**
 
 ### 正则表达式
 

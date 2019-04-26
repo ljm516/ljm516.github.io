@@ -1,7 +1,7 @@
 ---
 title: python爬虫_part3_scrapy框架学习之入门
 date: 2018-01-11 23:40
-categories: python
+categories: Python
 tags:
 - 爬虫
 - scrapy 
@@ -10,6 +10,8 @@ tags:
 开启爬虫框架 scrapy 学习之旅
 
 <!--more-->
+
+**{% post_link python爬虫_part4_scrapy框架学习之进阶 python爬虫_part4_scrapy框架学习之进阶 %}**
 
 * 安装
 

@@ -1,7 +1,7 @@
 ---
 title: python爬虫_part6_scrapy架构学习
 date: 2018-02-27 22:44:39
-categories: python
+categories: Python
 tags:
 - 爬虫
 - scrapy 
@@ -10,6 +10,8 @@ tags:
 这里记录 Scrapy 架构的介绍，及其工作流程。
 
 <!--more-->
+
+**{% post_link python爬虫实战-google_related_search python爬虫实战-google_related_search %}**
 
 ## Scrapy 核心架构
 

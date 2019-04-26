@@ -1,8 +1,8 @@
 ---
 title: python 爬虫实战之-百度联想词抓取
 date: 2018-04-19 14:35:00
-categories: python
-tags: 
+categories: Python
+tags:
 - 爬虫
 ---
 

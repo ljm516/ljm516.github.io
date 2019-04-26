@@ -1,7 +1,7 @@
 ---
 title: python爬虫_part4_scrapy框架学习之进阶
 date: 2018-01-21 22:00
-categories: python
+categories: Python
 tags:
 - 爬虫
 - scrapy 
@@ -10,6 +10,8 @@ tags:
 学习 scrapy 基本命令之后，开始学习 scrapy 的高级用法。包括如何机构化你爬取的数据, 怎样编写你的 spider 文件, spider 的一些属性和方法, xpath 的基础以及怎样进行传递参数运行 spider 文件。 
 
 <!--more-->
+
+**{% post_link python爬虫_part5_scrapy框架学习之XML&CSV python爬虫_part5_scrapy框架学习之XML&CSV %}**
 
 ### scrapy 进阶
 
