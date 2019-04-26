@@ -6,13 +6,14 @@
   <title>python 爬虫学习 part1-urllib 库的使用 | ljming的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="学习 python 爬虫，我是认真的。跟着书本走吧《精通 Python 网络爬虫》">
+<meta name="keywords" content="爬虫">
 <meta property="og:type" content="article">
 <meta property="og:title" content="python 爬虫学习 part1-urllib 库的使用">
 <meta property="og:url" content="https://ljm516.github.io/2018/01/03/python爬虫_part1_urllib库/index.html">
 <meta property="og:site_name" content="ljming的博客">
 <meta property="og:description" content="学习 python 爬虫，我是认真的。跟着书本走吧《精通 Python 网络爬虫》">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2018-11-05T15:22:52.620Z">
+<meta property="og:updated_time" content="2019-04-26T10:15:00.463Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python 爬虫学习 part1-urllib 库的使用">
 <meta name="twitter:description" content="学习 python 爬虫，我是认真的。跟着书本走吧《精通 Python 网络爬虫》">
@@ -96,6 +97,7 @@
       
         <p>学习 python 爬虫，我是认真的。跟着书本走吧《精通 Python 网络爬虫》</p>
 <a id="more"></a> 
+<p><strong><a href="/2018/01/08/python爬虫_part2_正则/" title="python爬虫_part2学习正则">python爬虫_part2学习正则</a></strong></p>
 <h3 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h3><ul>
 <li><p>一个简单的例子</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">file = urllib.request.urlopen(url)</span><br><span class="line">data = file.read() <span class="comment"># 读取全部数据</span></span><br><span class="line">dataline = file.readline() <span class="comment"># 读取一行数据</span></span><br><span class="line">print(data)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(filepath, <span class="string">'wb'</span>) <span class="keyword">as</span> fhandle:</span><br><span class="line">    fhandle.write(data)</span><br></pre></td></tr></table></figure>
@@ -145,9 +147,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2018/01/03/python爬虫_part1_urllib库/" data-id="cjuty0aik000yef5sz7o3xh4c" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2018/01/03/python爬虫_part1_urllib库/" data-id="cjuxwssti000oerfy96gk3hx2" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+
     </footer>
   </div>
   
@@ -192,7 +196,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/broker/">broker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consumer/">consumer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/producer/">producer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/broker/">broker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consumer/">consumer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/notes/">notes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/producer/">producer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文件处理/">文件处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
     </div>
   </div>
 
@@ -202,7 +206,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JVM/" style="font-size: 14px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+      <a href="/tags/JVM/" style="font-size: 14px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/notes/" style="font-size: 10px;">notes</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/文件处理/" style="font-size: 10px;">文件处理</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
     </div>
   </div>
 
