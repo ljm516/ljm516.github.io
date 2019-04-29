@@ -143,7 +143,6 @@ data = urllib.request.urlopen(req).read()
 >>> postdata = {'name': 'test', 'pass': 'test'}
 >>> data = urllib.parse.urlencode(postdata).encode('utf-8')
 >>> req = urllib.request.Request(url, data)
->>> req.add_header('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36')
 >>> req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36')
 >>> html = urllib.request.urlopen(req).read()
 >>> print(html)
