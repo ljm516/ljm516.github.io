@@ -14,7 +14,7 @@
 <meta property="og:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》关于Java垃圾收集的笔记。">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://ljm516.github.io/2019/02/24/Java垃圾收集/垃圾收集器.jpg">
-<meta property="og:updated_time" content="2019-05-17T02:44:46.412Z">
+<meta property="og:updated_time" content="2019-05-18T12:12:50.374Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java垃圾收集">
 <meta name="twitter:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》关于Java垃圾收集的笔记。">
@@ -226,18 +226,41 @@
 <li>-gcutil<br>监视内容与-gc基本相同，但输出主要关注已使用空间占总空间的百分比</li>
 <li>-gccause<br>与-gcunit功能一样，但是会额外输出导致上一次GC产生的原因</li>
 <li>-gcnew<br>监视新生代gc状况</li>
-<li>-gcnewcapacity<br>监视内容和-gcnew基本相同，输出的住户要关注使用到的最大、最小空间</li>
+<li>-gcnewcapacity<br>监视内容和-gcnew基本相同，输出的用户要关注使用到的最大、最小空间</li>
 <li>-gcold<br>监视老年代gc状况</li>
 <li>-gcoldcapacity<br>监视内容和-gcold基本相同，输出主要关注使用到的最大、最小空间</li>
 <li>-gcpermecapaticy<br>输出永久代使用的最大、最小空间</li>
 <li>-compiler<br>输出JIT编译器编译过的方法、耗时等信息</li>
 <li>-printcompilation<br>输出已经被JIT编译的方法</li>
 </ul>
+<h3 id="jinfo-Java配置信息工具"><a href="#jinfo-Java配置信息工具" class="headerlink" title="jinfo: Java配置信息工具"></a>jinfo: Java配置信息工具</h3><p>jinfo(Configuration info for java)作用是实时地查看和调整虚拟机各项参数。使用jps命令的-v参数可以查看虚拟机启动时显式指定的参数列表，可以使用jinfo -flag 选项进行查询未被显式指定的参数。可以使用-flag[+/-]name或者-flag name=value修改一部分运行期间可写的虚拟机参数值。</p>
+<p>jinfo 命令格式:</p>
+<p>jinfo [ option ] pid</p>
+<h3 id="jmap-Java内存映像工具"><a href="#jmap-Java内存映像工具" class="headerlink" title="jmap: Java内存映像工具"></a>jmap: Java内存映像工具</h3><p>jmap(Memory Map for Java)命令用于生成堆转存储快照（一般称为heapdump或dump文件）。不用jmap命令情况下，使用-XX:+HeapDumpOnOutOfMemoryError参数，让jvm在OOM异常是自动生成dump文件。通过-XX:+HeapDumpOnCtrlBreak参数则可以使用[Ctrl]+[Break]键让jvm生成dump文件。又或者在Linux系统下，通过kill -3命令发送进程退出信号，也可以拿到dump文件。</p>
+<p>jmap 命令格式:</p>
+<p>jmap [ option ] vmid</p>
+<h4 id="主要选项"><a href="#主要选项" class="headerlink" title="主要选项"></a>主要选项</h4><ul>
+<li>-dump<br>生成java堆转储快照。格式为: <code>-dump:[live, ]format=b, file=&lt;filename&gt;</code>，其中live子参数说明是否只dump储存活对象。</li>
+<li>-finalizerinfo<br>显示在F-Queue中等待Finalizer线程执行finalize方式的对象。只在Linux/Solaris平台下有效。</li>
+<li>-heap<br>显示Java堆详细信息，如使用哪种回收器、参数配置、分代状况等，只在Linux/Solaris平台下有效。</li>
+<li>-histo<br>显示堆中对象统计信息，包括类、实例数量、合计容量</li>
+<li>-permstat<br>以ClassLoader为统计口径显示永久代内存状态。只在Linux/Solaris平台下有效。</li>
+<li>-F<br>当前jvm进程对-dump选项没有响应时，可使用这个选项强制生层dump快照。只在Linux/Solaris平台下有效。</li>
+</ul>
+<h3 id="jhat-虚拟机堆转储快照分析工具"><a href="#jhat-虚拟机堆转储快照分析工具" class="headerlink" title="jhat: 虚拟机堆转储快照分析工具"></a>jhat: 虚拟机堆转储快照分析工具</h3><p>jhat(JVM Heap Analysis Tool)和jmap搭配使用，来分析jmap生成的堆转储快照。<code>jhat &lt;dumpfile&gt;</code></p>
+<h3 id="jstack-Java堆栈跟踪工具"><a href="#jstack-Java堆栈跟踪工具" class="headerlink" title="jstack: Java堆栈跟踪工具"></a>jstack: Java堆栈跟踪工具</h3><p>jstack(Stack Trace for Java)命令用于生成虚拟机当前时刻的线程快照（一般称为threaddump或者javacore文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成线程快照的主要目的是定位线程出现长时间停顿的原因，如线程死锁、<br>死循坏、请求外部资源导致的长时间等待等都是导致线程长时间停顿的常见原因。</p>
+<p>jstack 命令格式:</p>
+<p>jstack [ option ] vmid</p>
+<h4 id="主要选项-1"><a href="#主要选项-1" class="headerlink" title="主要选项"></a>主要选项</h4><ul>
+<li>-F<br>当正常输出的请求不被响应时，强制输出线程堆栈</li>
+<li>-l<br>除堆栈外，显示关于锁的附加信息</li>
+<li>-m<br>如果调用到本地方法的话，可以显示C/C++的堆栈</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/02/24/Java垃圾收集/" data-id="cjvte4az1002tnxs6la0lxoxt" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/02/24/Java垃圾收集/" data-id="cjvtfkv17002tus5sor7b7di0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
