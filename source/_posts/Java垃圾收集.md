@@ -134,7 +134,7 @@ option 代表用户希望查询的虚拟机信息，主要分三类: 类装载�
 - -gcnew
 监视新生代gc状况
 - -gcnewcapacity
-监视内容和-gcnew基本相同，输出的住户要关注使用到的最大、最小空间
+监视内容和-gcnew基本相同，输出的用户要关注使用到的最大、最小空间
 - -gcold
 监视老年代gc状况
 - -gcoldcapacity
@@ -145,6 +145,57 @@ option 代表用户希望查询的虚拟机信息，主要分三类: 类装载�
 输出JIT编译器编译过的方法、耗时等信息
 - -printcompilation
 输出已经被JIT编译的方法
+
+### jinfo: Java配置信息工具
+jinfo(Configuration info for java)作用是实时地查看和调整虚拟机各项参数。使用jps命令的-v参数可以查看虚拟机启动时显式指定的参数列表，可以使用jinfo -flag 选项进行查询未被显式指定的参数。可以使用-flag[+/-]name或者-flag name=value修改一部分运行期间可写的虚拟机参数值。
+
+jinfo 命令格式:
+
+jinfo [ option ] pid
+
+### jmap: Java内存映像工具
+jmap(Memory Map for Java)命令用于生成堆转存储快照（一般称为heapdump或dump文件）。不用jmap命令情况下，使用-XX:+HeapDumpOnOutOfMemoryError参数，让jvm在OOM异常是自动生成dump文件。通过-XX:+HeapDumpOnCtrlBreak参数则可以使用[Ctrl]+[Break]键让jvm生成dump文件。又或者在Linux系统下，通过kill -3命令发送进程退出信号，也可以拿到dump文件。
+
+jmap 命令格式:
+
+jmap [ option ] vmid
+
+#### 主要选项
+
+- -dump
+生成java堆转储快照。格式为: `-dump:[live, ]format=b, file=<filename>`，其中live子参数说明是否只dump储存活对象。
+- -finalizerinfo
+显示在F-Queue中等待Finalizer线程执行finalize方式的对象。只在Linux/Solaris平台下有效。
+- -heap
+显示Java堆详细信息，如使用哪种回收器、参数配置、分代状况等，只在Linux/Solaris平台下有效。
+- -histo
+显示堆中对象统计信息，包括类、实例数量、合计容量
+- -permstat
+以ClassLoader为统计口径显示永久代内存状态。只在Linux/Solaris平台下有效。
+- -F
+当前jvm进程对-dump选项没有响应时，可使用这个选项强制生层dump快照。只在Linux/Solaris平台下有效。
+
+### jhat: 虚拟机堆转储快照分析工具
+jhat(JVM Heap Analysis Tool)和jmap搭配使用，来分析jmap生成的堆转储快照。`jhat <dumpfile>`
+
+### jstack: Java堆栈跟踪工具
+
+jstack(Stack Trace for Java)命令用于生成虚拟机当前时刻的线程快照（一般称为threaddump或者javacore文件）。线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成线程快照的主要目的是定位线程出现长时间停顿的原因，如线程死锁、
+死循坏、请求外部资源导致的长时间等待等都是导致线程长时间停顿的常见原因。
+
+jstack 命令格式:
+
+jstack [ option ] vmid
+
+#### 主要选项
+- -F
+当正常输出的请求不被响应时，强制输出线程堆栈
+- -l
+除堆栈外，显示关于锁的附加信息
+- -m
+如果调用到本地方法的话，可以显示C/C++的堆栈
+
+
 
 
 
