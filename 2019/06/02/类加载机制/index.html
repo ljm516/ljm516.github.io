@@ -3,24 +3,20 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>HotSpot中的对象 | ljming的博客</title>
+  <title>类加载机制 | ljming的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。">
+  <meta name="description" content="JVM如果加载class文件？">
 <meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HotSpot中的对象">
-<meta property="og:url" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/index.html">
+<meta property="og:title" content="类加载机制">
+<meta property="og:url" content="https://ljm516.github.io/2019/06/02/类加载机制/index.html">
 <meta property="og:site_name" content="ljming的博客">
-<meta property="og:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。">
+<meta property="og:description" content="JVM如果加载class文件？">
 <meta property="og:locale" content="zh">
-<meta property="og:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/对象创建.jpg">
-<meta property="og:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/句柄.jpg">
-<meta property="og:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/直接指针.jpg">
-<meta property="og:updated_time" content="2019-04-23T16:35:50.460Z">
+<meta property="og:updated_time" content="2019-06-03T15:56:11.104Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HotSpot中的对象">
-<meta name="twitter:description" content="本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。">
-<meta name="twitter:image" content="https://ljm516.github.io/2019/04/23/HotSpot中的对象/对象创建.jpg">
+<meta name="twitter:title" content="类加载机制">
+<meta name="twitter:description" content="JVM如果加载class文件？">
   
     <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
   
@@ -73,16 +69,12 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-HotSpot中的对象" class="article article-type-post" itemscope="" itemprop="blogPost">
+        <section id="main"><article id="post-类加载机制" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2019/04/23/HotSpot中的对象/" class="article-date">
-  <time datetime="2019-04-23T15:13:24.000Z" itemprop="datePublished">2019-04-23</time>
+    <a href="/2019/06/02/类加载机制/" class="article-date">
+  <time datetime="2019-06-02T14:35:59.000Z" itemprop="datePublished">2019-06-02</time>
 </a>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-  </div>
-
   </div>
   <div class="article-inner">
     
@@ -91,7 +83,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      HotSpot中的对象
+      类加载机制
     </h1>
   
 
@@ -99,36 +91,87 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本文记录阅读周志明老师的《深入理解Java虚拟机》的HotSpot中的对象探秘笔记，从对象的创建，内存布局和对象访问做笔记。</p>
+        <p>JVM如果加载class文件？</p>
 <a id="more"></a>
-<h2 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h2><p>创建流程</p>
-<p><img src="/2019/04/23/HotSpot中的对象/对象创建.jpg" alt="对象的创建流程"></p>
-<ol>
-<li>没有对象怎么办，那就new一个<br>当虚拟机遇到一个new 指令，会去检查这个指令参数在能否在常量池中定位到一个类的符号，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，则执行类的加载过程。</li>
-<li>为对象分配内存<br>在类加载完成后，对象所需的内存就确定了，为对象分配内存就是在java堆类划出一块确定大小的内存空间。为对象分配空间的算法有两种：指针碰撞和空闲列表。指针碰撞的前提是Java堆中的内存是绝对规整的，用过的内存放在一边，空闲的内存放在另一边，当为新对象分配内存，只需要移动响应内存大小的距离就行。空闲列表需要虚拟机维护一个列表，记录那些内存是可用的，分配内存时，从列表中找到一块足够大的空间划分给对象实例，然后更新列表。Java堆是否规整，由所采用的垃圾收集器是否带有压缩整理功能决定。因此，在使用 Serial、ParNew等带Compact过程的收集器，通常采用指针碰撞算法，而使用CMS这种基于Mark-Sweep算法的收集器时，通常采用空闲列表。</li>
-<li>对象初始化<br>完成上面的步骤，从虚拟机的角度来讲，一个新的对象就产生了，但是从程序角度来说，对象的创建才刚开始，对象的所有属性都是默认值，接下来就是执行init操作，把对象按照程序员的意愿进行初始化。</li>
-</ol>
-<h2 id="对象内存结构"><a href="#对象内存结构" class="headerlink" title="对象内存结构"></a>对象内存结构</h2><p>可分为3块区域：对象头、实例数据、对齐填充。</p>
-<ol>
-<li>对象头<br>分为两部分，第一部分用于存储对象自身的运行时数据，包括哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等。这部分数据长度在32位和64位虚拟机分别是32bit和64bit，官方称之为“Mark word”。第二部分是类型指针，即对象指向它的类元数据的指针，虚拟机通过它能确定这个对象时那个类的实例。</li>
-<li>实例数据<br>对象真正存储的有效信息，程序代码中所定义的各种类型的字段内容。</li>
-<li>对齐填充<br>并不是必然存在，仅仅起占位符的作用。HotSpot虚拟机自动内存管管理系统要求对象起始地址必须是8字节的整数倍，就是对象的大小必须是8字节的整数倍。对象头正好是8字节的整数倍，如果示例数据没有对齐，就需要通过对齐填充补全。<h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2>目前主流的两种定位方式:使用句柄和直接指针。</li>
-</ol>
-<ul>
-<li>使用句柄<br>Java堆中会划出一块内存作为句柄池，reference中存储的是对象的句柄地址，句柄包含了对象<br>实例数据和类型数据各自的具体地址信息。</li>
+<p>类的生命周期: 加载、验证、准备、解析、初始化、使用、卸载共7个阶段。</p>
+<h2 id="类加载的过程"><a href="#类加载的过程" class="headerlink" title="类加载的过程"></a>类加载的过程</h2><ul>
+<li>加载<br>  在加载阶段，虚拟机需要完成以下3件事情:<ul>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流。</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构。</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据访问入口。</li>
 </ul>
-<p><img src="/2019/04/23/HotSpot中的对象/句柄.jpg" alt="使用句柄"></p>
+</li>
+<li><p>验证<br>  这一阶段的目的是为了确保Class文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。</p>
+<ol>
+<li><p>文件格式验证<br> 这个阶段要验证字节流是否符合Class文件格式的规范，并且能被当前版本的虚拟机处理。这一阶段可能包括下面的这些验证点:</p>
 <ul>
-<li>直接指针<br>Java堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而reference中存储的直接就是对象地址</li>
+<li>是否以魔数0xCAFEBABE开头。</li>
+<li>主、次版本号是否在当前虚拟机处理范围之内。</li>
+<li>常量池的常量中是否有不被支持的常量类型。</li>
+<li><p>指向常量的各种索引值中是否有指向不存在的常量或不符合类型的常量。<br>…</p>
+<p>该验证阶段的主要目的是保证输入的字节流能正确地解析并存储于方法区之内，格式上符合描述一个Java类型信息的要求。这个阶段的验证是基于二进制字节流进行的，只有通过了这个阶段的验证后，字节流才会进入内存的方法区中进行存储，所以后面的3个验证阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流。</p>
+</li>
 </ul>
-<p><img src="/2019/04/23/HotSpot中的对象/直接指针.jpg" alt="直接指针"></p>
-<h3 id="两种方法的各自优点"><a href="#两种方法的各自优点" class="headerlink" title="两种方法的各自优点"></a>两种方法的各自优点</h3><p>使用句柄的好处：reference存储的是稳定的句柄地址，对象移动（GC）只会改变句柄中实例数据的数据指针，reference本身不用改变。<br>使用直接指针的最大好处就是快，它节省了一次指针定位的时间开销，在java中对象访问很频繁，这种开销积少成多后也是一项非常可观的执行成本。</p>
-<p>HotSpot虚拟机使用的直接指针的方式进行对象访问的。</p>
+</li>
+<li><p>元数据验证<br> 这个阶段是对字节码描述信息进行语义分析，以保证其描述的信息符合Java语言规范的要求，这个阶段可能包括的验证点如下:</p>
+<ul>
+<li>这个类是否有父类。</li>
+<li>这个类的父类是否继承了不允许被继承的类。</li>
+<li>如果这个类不是抽象类，是否实现了其父类或接口之中要求实现的所有方法。</li>
+<li><p>类中的字段、方法是否与父类产生矛盾<br>…</p>
+<p>第二阶段的主要目的是对类的元数据信息进行语义校验，保证不存在不符合Java语言规范的元数据信息。</p>
+</li>
+</ul>
+</li>
+<li>字节码验证<br> 第3阶段的目的是通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的。对类的方法体进行校验分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的事件，例如:<ul>
+<li>保证任意时刻操作数栈的数据类型于指令代码序列都能配合工作。</li>
+<li>保证跳转指令不会跳转到方法体外字节码指令上。</li>
+<li>保证方法体中的类型转换是有效的。<br>…</li>
+</ul>
+</li>
+<li><p>符号引用验证<br> 最后一个阶段校验发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在解析阶段中发生。符号引用验证可以看做是对类自身以外的信息进行匹配性校验，通常需要校验下列内容:</p>
+<ul>
+<li>符号引用中通过字符串描述的全限定名是否能找到对应的类。</li>
+<li>在指定类中是否存在符合方法的字段描述符以及简单名称所描述的方法和字段。</li>
+<li><p>符号引用中的类、字段、方法的访问性是否可被当前类访问。<br>…</p>
+<p>符号引用验证的目的是确保解析动作能正常执行，如果无法通过符号引用验证，那么将会抛出一个java.lang.IncompatibleClassChangeError异常的子类，如java.lang.IllegalAccessError、java.lang.NoSuchFieldError、java.lang.NoSuchMethod.Error。</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>准备<br>  准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些变量所使用的内存都将在方法区中进行分配。</p>
+</li>
+<li><p>解析<br>  解析阶段是虚拟机将常量池内的符号引用替换为直接引用的过程。</p>
+<ul>
+<li>符号引用<br>  符号引用以一组符号来描述所引用的目标，符号可以是任何形式的字面量，只要使用时能无歧义地定位到目标即可。</li>
+<li><p>直接引用<br>  直接引用可以是直接指向目标的指针、相对偏移量或者是一个能间接定位到目标的句柄。</p>
+<p>解析动作包括如下几个:</p>
+</li>
+</ul>
+<ol>
+<li>类或接口的解析</li>
+<li>字段的解析</li>
+<li>类方法的解析</li>
+<li>接口方法解析</li>
+</ol>
+</li>
+<li>初始化<br>  初始化是类加载过程的最后一步。在准备阶段，变量已经赋过一次系统要求的初始值，而初始化阶段，则根据程序员通过程序制定的主管计划去初始化类变量和其它资源，或者可以从另一个角度表达: 初始化阶段是执行类构造器<clinit>()方法的过程。</clinit></li>
+</ul>
+<h2 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h2><p>对于任意一个类，都需要由加在它的类加载器和这个类本身一同确立其在Java虚拟机中的唯一性，每一个类加载器，都拥有一个独立的类名称空间。这句话可以表达的更通俗一些:比较两个类是否”相等“，只有在这两个类是由同一个类加载器加载的前提下才有意义，否则，即使这两个类来源于同一个class文件，被同一个虚拟机加载，只要加载它们的类加载器不同，那这两个类就必定不相等。</p>
+<h3 id="双亲委派模型"><a href="#双亲委派模型" class="headerlink" title="双亲委派模型"></a>双亲委派模型</h3><p>从jvm的角度来讲，只存在两种不同的类加载器: 一种是启动类加载器（Bootstrap ClassLoader），这个类加载器是有C++语言实现，是虚拟机的一部分；另一种就是所有其他的类加载器，这个类加载器都有Java语言实现，独立于虚拟机外部，并且全部继承自抽象类java.lang.ClassLoader。</p>
+<p>绝大部分Java程序都会使用到以下3中系统提供的类加载器:</p>
+<ul>
+<li>启动类加载器（Bootstrap ClassLoader）:这个类加载器负责将存放在<java_home>/lib目录中的，或者被-Xbootclasspath参数所指定的路径中的，并且是虚拟机识别的类库加载到虚拟机内存中。启动类加载器无法被Java程序直接引用，用户在编写自定义类加载器时，如果需要把加载请求委派给引导类加载器，那直使用null代替即可。</java_home></li>
+<li>扩展类加载器（Extension ClassLoader）:这个加载器有sun.misc.Launcher$ExtClassLoader实现，它负责加载<java_home>/lib/ext目录中的，或者被java.ext.dirs系统变量所指定的路径中的所有类库，开发者可以直接是有扩展类加载器。</java_home></li>
+<li>应用程序类加载器（Application ClassLoader）:这个类加载器由sun.misc.Launcher$AppClassLoader实现。由于这个类加载器是ClassLoader中的getSystemClassLoader()方法的返回值，所以一般也称它为系统类加载器。它负责加载用户类路径（classpath）上所指定的类库。可以直接使用，如果应用程序没有自定义过自己的类加载器，一般情况下这个就是程序中默认的类加载器。</li>
+</ul>
+<p>双亲委派模型的工作过程: 如果一个类加载器收到类加载的请求，它首先不会自己去尝试加载这个类，而是把这个请求委派给父类加载器去完成，每一个层次的类加载器都是如此，因此所有的加载请求最终都应该传送到顶层的启动类加载器中，只有当父加载器反馈自己无法完成这个加载请求时，子类才会尝试自己去加载。   </p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/04/23/HotSpot中的对象/" data-id="cjwgk4bxz0000d3s63a65z6lt" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/06/02/类加载机制/" data-id="cjwgk4bz0001kd3s6qjrap6i2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -139,19 +182,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2019/05/18/python爬虫-手机号归属地查询/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          python爬虫-手机号归属地查询
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/02/27/rocketmq之消息消费及消费失败重试机制/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/05/18/python爬虫-手机号归属地查询/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">rocketmq之消息消费及消费失败重试机制</div>
+      <div class="article-nav-title">python爬虫-手机号归属地查询</div>
     </a>
   
 </nav>
