@@ -66,6 +66,52 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-内存分配和回收策略" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/20/内存分配和回收策略/" class="article-date">
+  <time datetime="2019-06-20T13:24:44.000Z" itemprop="datePublished">2019-06-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/20/内存分配和回收策略/">内存分配和回收策略</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在Java中，JVM是怎样给对象分配内存，又是如果对内存进行回收的呢？</p>
+<!---->
+<p>对象的内存分配，往大方向讲，就是在堆上分配，对象主要分配在新生代的Eden区上，如果启动了本地线程分配缓冲，将按线程优先在TLAB上分配。少数情况也可能直接分配在老年代中，分配的规则并不是百分之百固定的，其细节取决于当前使用的哪种垃圾收集器组合，还有虚拟机中与内存相关的参数的设置。</p>
+<h2 id="对象优先在Eden分配"><a href="#对象优先在Eden分配" class="headerlink" title="对象优先在Eden分配"></a>对象优先在Eden分配</h2><p>大多数情况下，对象在新生代Eden区中分配。当Eden区中没有足够空间进行分配时，虚拟机将发起一次Minor GC。</p>
+<h2 id="大对象直接进入老年代"><a href="#大对象直接进入老年代" class="headerlink" title="大对象直接进入老年代"></a>大对象直接进入老年代</h2><p>所谓的大对象，需要大量连续内存空间的Java对象，最典型的大对象就是那种很长的字符串以及数组，经常出现大对象容易导致内存还有不少空间就提前触发垃圾收集以获取足够的连续空间来存储这些大对象。</p>
+<h2 id="长期存活的对象将进入老年代"><a href="#长期存活的对象将进入老年代" class="headerlink" title="长期存活的对象将进入老年代"></a>长期存活的对象将进入老年代</h2><p>虚拟机采用了分代收集的思想来管理内存，那么内存回收时就必须能识别那些对象应放在新生代，那些对象应放在老年代中。为了做到这点，虚拟机给每个对象定义了一些对象年龄计数器。如果对象在Eden出生并经过第一次Minor Gc后仍然存活，并且能被Survivor容纳的话，将被移动到Survivor空间中，并且对象年龄设为1。对象每再Survivor区中经历一次Minor Gc，年龄就增加一岁，当它的年龄增加到一定的程度（默认15），将会晋升到老年代。</p>
+<h2 id="动态对象年龄判定"><a href="#动态对象年龄判定" class="headerlink" title="动态对象年龄判定"></a>动态对象年龄判定</h2><p>为了能更好的适应不同的内存状况，虚拟机并不是永远的要求对象的年龄必须达到了MaxTenuringThreshold才能晋升老年代，如果在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到<br>MaxTenuringThreshold中要求的年龄。</p>
+<h2 id="空间分配担保"><a href="#空间分配担保" class="headerlink" title="空间分配担保"></a>空间分配担保</h2><p>在发生Minor Gc之前，虚拟机会先检查老年代最大连续空间是否大于新生代所有对象空间，如果这个条件成立，那么Minor Gc可以确保是安全的。如果不成立，则虚拟机会查看HandlePromotionFailure设置值是否允许担保失败。如果允许，那么会继续检查老年大最大可用连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，将尝试一次Minor Gc，尽管这次Minor Gc是有风险的；如果小于，或者HandlePromotionFailure设置不允许，则这时就要改为进行一次Full Gc。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://ljm516.github.io/2019/06/20/内存分配和回收策略/" data-id="cjx91ntns001plvs6rmord2t0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-类加载机制" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/06/02/类加载机制/" class="article-date">
@@ -97,7 +143,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/06/02/类加载机制/" data-id="cjwgk4bz0001kd3s6qjrap6i2" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/06/02/类加载机制/" data-id="cjx91ntnr001mlvs66z80abhs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -144,7 +190,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/05/18/python爬虫-手机号归属地查询/" data-id="cjwgk4byq000ud3s6573ch1ah" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/05/18/python爬虫-手机号归属地查询/" data-id="cjx91ntnf000qlvs68mbs6c23" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
@@ -191,7 +237,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/04/23/HotSpot中的对象/" data-id="cjwgk4bxz0000d3s63a65z6lt" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/04/23/HotSpot中的对象/" data-id="cjx91ntmm0000lvs6s0hh5ukh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -238,7 +284,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/02/27/rocketmq之消息消费及消费失败重试机制/" data-id="cjwgk4c06003id3s634ilv7vh" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/02/27/rocketmq之消息消费及消费失败重试机制/" data-id="cjx91ntoz003hlvs624eebjfe" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/consumer/">consumer</a></li></ul>
@@ -285,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/02/24/Java垃圾收集/" data-id="cjwgk4bze002td3s63pmvmft7" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/02/24/Java垃圾收集/" data-id="cjx91nto6002slvs62vw159wr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -332,7 +378,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/02/24/Java运行时数据区域/" data-id="cjwgk4by90005d3s6261xjqt9" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/02/24/Java运行时数据区域/" data-id="cjx91ntmu0004lvs6175ta2dt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
@@ -379,7 +425,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/01/06/rocketmq之consumer消息消费者/" data-id="cjwgk4c0x003vd3s60nz33ggk" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/01/06/rocketmq之consumer消息消费者/" data-id="cjx91ntpc003ulvs6kmiafy4z" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/consumer/">consumer</a></li></ul>
@@ -426,7 +472,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/" data-id="cjwgk4c05003hd3s6a79yr7do" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2019/01/03/rocketmq之producer消息发送者/" data-id="cjx91ntoy003glvs6d15atyo6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/producer/">producer</a></li></ul>
@@ -473,57 +519,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2018/12/28/rocketmq之broker源码学习/" data-id="cjwgk4c1g0042d3s65inmhfrt" class="article-share-link">Share</a>
+      <a data-url="https://ljm516.github.io/2018/12/28/rocketmq之broker源码学习/" data-id="cjx91ntq40041lvs6oxi25lv1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/broker/">broker</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-sparkTransformation-Actions" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/11/05/sparkTransformation-Actions/" class="article-date">
-  <time datetime="2018-11-05T15:22:52.623Z" itemprop="datePublished">2018-11-05</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/BigData/">BigData</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/05/sparkTransformation-Actions/">spark transformation 和 actions 操作</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>基于 Java 的 Spark 常用转换 Transformations 操作; 本地模式。</p>
-        
-          <p class="article-more-link">
-            <a href="/2018/11/05/sparkTransformation-Actions/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://ljm516.github.io/2018/11/05/sparkTransformation-Actions/" data-id="cjwgk4bzi0031d3s6oqqwy2x8" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
 
     </footer>
   </div>
@@ -565,7 +564,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/JVM/" style="font-size: 16px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/notes/" style="font-size: 10px;">notes</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/文件处理/" style="font-size: 10px;">文件处理</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+      <a href="/tags/JVM/" style="font-size: 18px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/notes/" style="font-size: 10px;">notes</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/文件处理/" style="font-size: 10px;">文件处理</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
     </div>
   </div>
 
@@ -587,6 +586,10 @@
       <ul>
         
           <li>
+            <a href="/2019/06/20/内存分配和回收策略/">内存分配和回收策略</a>
+          </li>
+        
+          <li>
             <a href="/2019/06/02/类加载机制/">类加载机制</a>
           </li>
         
@@ -600,10 +603,6 @@
         
           <li>
             <a href="/2019/02/27/rocketmq之消息消费及消费失败重试机制/">rocketmq之消息消费及消费失败重试机制</a>
-          </li>
-        
-          <li>
-            <a href="/2019/02/24/Java垃圾收集/">Java垃圾收集</a>
           </li>
         
       </ul>
