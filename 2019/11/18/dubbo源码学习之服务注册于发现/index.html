@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>dubbo源码学习之服务注册与发现 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文记录源码学习dubbo服务注册与发现实现原理笔记。">
+<meta name="keywords" content="dubbo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dubbo源码学习之服务注册与发现">
+<meta property="og:url" content="https://ljm516.github.io/2019/11/18/dubbo源码学习之服务注册于发现/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="本文记录源码学习dubbo服务注册与发现实现原理笔记。">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-11-23T16:39:49.993Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="dubbo源码学习之服务注册与发现">
+<meta name="twitter:description" content="本文记录源码学习dubbo服务注册与发现实现原理笔记。">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://ljm516.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-dubbo源码学习之服务注册于发现" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/11/18/dubbo源码学习之服务注册于发现/" class="article-date">
+  <time datetime="2019-11-18T13:40:54.000Z" itemprop="datePublished">2019-11-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      dubbo源码学习之服务注册与发现
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文记录源码学习dubbo服务注册与发现实现原理笔记。</p>
+<a id="more"></a>
+<h2 id="dubbo服务注册"><a href="#dubbo服务注册" class="headerlink" title="dubbo服务注册"></a>dubbo服务注册</h2><p>dubbo服务提供者的核心入口为ServiceBean。ServiceBean继承了ServiceConfig类，实现了Initializingbean、DisposableBean、ApplicationContextAware、ApplicationListener、BeanNameAware、ApplicationEventPublisherAware等接口。</p>
+<h3 id="源码分析afterPropertiesSet-方法"><a href="#源码分析afterPropertiesSet-方法" class="headerlink" title="源码分析afterPropertiesSet()方法"></a>源码分析afterPropertiesSet()方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ①</span></span><br><span class="line"><span class="keyword">if</span> (getProvider() == <span class="keyword">null</span>) &#123;</span><br><span class="line">    Map&lt;String, ProviderConfig&gt; providerConfigMap = applicationContext == <span class="keyword">null</span> ? <span class="keyword">null</span> : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ProviderConfig.class, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ②</span></span><br><span class="line"><span class="keyword">if</span> (getApplication() == <span class="keyword">null</span> &amp;&amp; (getProvider() == <span class="keyword">null</span> || getProvider().getApplication() == <span class="keyword">null</span>)) &#123;</span><br><span class="line">    Map&lt;String, ApplicationConfig&gt; applicationConfigMap = applicationContext == <span class="keyword">null</span> ? <span class="keyword">null</span> : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ApplicationConfig.class, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ③</span></span><br><span class="line"><span class="keyword">if</span> (getModule() == <span class="keyword">null</span> &amp;&amp; (getProvider() == <span class="keyword">null</span> || getProvider().getModule() == <span class="keyword">null</span>)) &#123;</span><br><span class="line">    Map&lt;String, ModuleConfig&gt; moduleConfigMap = applicationContext == <span class="keyword">null</span> ? <span class="keyword">null</span> : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ModuleConfig.class, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ④</span></span><br><span class="line"><span class="keyword">if</span> ((CollectionUtils.isEmpty(getRegistries())) &amp;&amp; (getProvider() == <span class="keyword">null</span> || CollectionUtils.isEmpty(getProvider().getRegistries())) &amp;&amp; (getApplication() == <span class="keyword">null</span> || CollectionUtils.isEmpty(getApplication().getRegistries()))) &#123;</span><br><span class="line">    Map&lt;String, RegistryConfig&gt; registryConfigMap = applicationContext == <span class="keyword">null</span> ? <span class="keyword">null</span> : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, RegistryConfig.class, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ⑤</span></span><br><span class="line"><span class="keyword">if</span> (getMetadataReportConfig() == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ⑥</span></span><br><span class="line"><span class="keyword">if</span> (getConfigCenter() == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ⑦</span></span><br><span class="line"><span class="keyword">if</span> (getMonitor() == <span class="keyword">null</span>&amp;&amp; (getProvider() == <span class="keyword">null</span> || getProvider().getMonitor() == <span class="keyword">null</span>) &amp;&amp; (getApplication() == <span class="keyword">null</span> || getApplication().getMonitor() == <span class="keyword">null</span>)) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ⑧</span></span><br><span class="line"><span class="keyword">if</span> (CollectionUtils.isEmpty(getProtocols()) &amp;&amp; (getProvider() == <span class="keyword">null</span> || CollectionUtils.isEmpty(getProvider().getProtocols()))) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ⑨</span></span><br><span class="line"><span class="keyword">if</span> (!supportedApplicationListener) &#123;</span><br><span class="line">    export();</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line">①中如果&lt;dubbo:service&gt;标签没有配置provider属性，则从applicationContext查找一个&lt;dubbo:provider&gt;配置，获取该实例，如果存在多个，则会抛出异常，提示<span class="string">"Duplicate provider configs xxx"</span>。</span><br><span class="line">②中如果&lt;dubbo:service&gt;标签没有配置application属性，则从applicationContext中查找一个&lt;dubbo:application&gt;配置，获取该实例，如果存在多个，则会抛出异常，提示<span class="string">"Duplicate application configs xxx"</span>。</span><br><span class="line">③中如果&lt;dubbo:service&gt;标签没有配置<span class="keyword">module</span>属性，则从ApplicationContext查找一个&lt;dubbo:<span class="keyword">module</span>&gt;配置，获取该实例，如果存在多个，则会抛出异常，提示<span class="string">"Duplicate module configs xxx"</span>。</span><br><span class="line">④中如果&lt;dubbo:service&gt;标签中没有配置registry属性，则从ApplicationContext查找&lt;dubbo:registry&gt;配置，获取该实例，可以配置多个registry。</span><br><span class="line">⑦中如果&lt;dubbo:service&gt;标签中没有配置monitor属性，则从ApplicationContext查找&lt;dubbo:monitor&gt;配置，获取该实例，存在多个，则会抛出异常， 提示<span class="string">"Duplicate monitor configs: xxx"</span>。</span><br><span class="line">⑧中如果&lt;dubbo:service&gt;标签没有配置Protocol属性，则从ApplicationContext查找&lt;dobbo:protocol&gt;配置，获取该实例，可以配置多个。</span><br><span class="line">⑨执行服务暴露。</span><br><span class="line"></span><br><span class="line">### 源码分析expor()方法</span><br><span class="line">在serviceBean经过上述的一下配置加载之后，接下来就是执行服务暴露的过程。</span><br><span class="line">```java</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.export();</span><br><span class="line">    <span class="comment">// Publish ServiceBeanExportedEvent</span></span><br><span class="line">    publishExportEvent();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先调用父类(ServiceConfig)的export()方法，来看看父类的export方法都做了什么操作。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    checkAndUpdateSubConfigs(); <span class="comment">// ①</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!shouldExport()) &#123; <span class="comment">// ②</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (shouldDelay()) &#123; <span class="comment">// ③</span></span><br><span class="line">        DELAY_EXPORT_EXECUTOR.schedule(<span class="keyword">this</span>::doExport, getDelay(), TimeUnit.MILLISECONDS);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        doExport(); <span class="comment">//④</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先①中进行配置检测和更新。配置检测和更新而分为以下几个步骤:</p>
+<ul>
+<li>调用completeCompoundConfigs()方法，完成在全局配置上显式定义的默认配置。</li>
+<li>检测provider是否为空，如果为空，则从ConfigManager获取默认的provider。</li>
+<li>检测Protocol，如果protocols为空，则将protocolId转化成protocol。</li>
+<li>检测Application，如果Application为空，从ConfigManager获取默认的Application，如果application配置非法，则抛出异常</li>
+<li>如果服务不是暴露在本地，则检测registry，如果registry配置非法，也抛出异常。</li>
+<li>校验ref与interface属性。如果ref是GenericService，则为dubbo的泛化实现，然后验证interface接口与ref引用的类型是否一致。</li>
+<li>…<br>②检测配置的export属性是否为true，如果为false直接返回，不暴露服务。<br>③判断是否应该延迟暴露，获取delay配置的值，delay的值不为空并且大于0则表示需要延迟暴露，延迟的时间为delay的具体值，单位毫秒。然后会启动一个定时任务去执行服务暴露工作。<br>④执行服务暴露</li>
+</ul>
+<h3 id="源码分析doExport-方法"><a href="#源码分析doExport-方法" class="headerlink" title="源码分析doExport()方法"></a>源码分析doExport()方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">doExport</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (unexported) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The service "</span> + interfaceClass.getName() + <span class="string">" has already unexported!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (exported) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    exported = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (StringUtils.isEmpty(path)) &#123;</span><br><span class="line">        path = interfaceName;</span><br><span class="line">    &#125;</span><br><span class="line">    doExportUrls();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法加锁了，针对一个服务，只会暴露一次，如果exported为true，就不会进行暴露。如果path(服务名称)为空，则取接口名。接着调用doExportUrls()方法</p>
+<h3 id="源码分析doExportUrls-方法"><a href="#源码分析doExportUrls-方法" class="headerlink" title="源码分析doExportUrls()方法"></a>源码分析doExportUrls()方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">doExportUrls</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    List&lt;URL&gt; registryURLs = loadRegistries(<span class="keyword">true</span>); <span class="comment">// ①</span></span><br><span class="line">    <span class="keyword">for</span> (ProtocolConfig protocolConfig : protocols) &#123;</span><br><span class="line">        String pathKey = URL.buildKey(getContextPath(protocolConfig).map(p -&gt; p + <span class="string">"/"</span> + path).orElse(path), group, version); <span class="comment">// ②</span></span><br><span class="line">        ProviderModel providerModel = <span class="keyword">new</span> ProviderModel(pathKey, ref, interfaceClass);</span><br><span class="line">        ApplicationModel.initProviderModel(pathKey, providerModel);</span><br><span class="line">        doExportUrlsFor1Protocol(protocolConfig, registryURLs); <span class="comment">// ③</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>①首先加载注册地址，从registries列表中解析；②构建服务路径，路径信息包含protocol、group、verison、path(服务名称)等信息；③调用doExportUrlsFor1Protocol方法，按照指定的协向各个注册地址暴露服务。</p>
+<h3 id="源码分析doExportUrlsFor1Protocol方法"><a href="#源码分析doExportUrlsFor1Protocol方法" class="headerlink" title="源码分析doExportUrlsFor1Protocol方法"></a>源码分析doExportUrlsFor1Protocol方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ①</span></span><br><span class="line">String name = protocolConfig.getName();</span><br><span class="line"><span class="keyword">if</span> (StringUtils.isEmpty(name)) &#123;</span><br><span class="line">name = DUBBO;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ②</span></span><br><span class="line">Map&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">map.put(SIDE_KEY, PROVIDER_SIDE); <span class="comment">// ③ </span></span><br><span class="line">appendRuntimeParameters(map);</span><br><span class="line">appendParameters(map, metrics);</span><br><span class="line">appendParameters(map, application);</span><br><span class="line">appendParameters(map, <span class="keyword">module</span>);</span><br><span class="line">appendParameters(map, provider);</span><br><span class="line">appendParameters(map, protocolConfig);</span><br><span class="line">appendParameters(map, <span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+<p>①如果protocol为空，默认为dubbo协议；②map容器存放一些配置信息；③表示为provider<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (CollectionUtils.isNotEmpty(methods)) &#123;</span><br><span class="line">    <span class="keyword">for</span> (MethodConfig method : methods) &#123;</span><br><span class="line">        appendParameters(map, method, method.getName()); <span class="comment">// ①</span></span><br><span class="line">        String retryKey = method.getName() + <span class="string">".retry"</span>; <span class="comment">// ②</span></span><br><span class="line">        <span class="keyword">if</span> (map.containsKey(retryKey)) &#123;</span><br><span class="line">            String retryValue = map.remove(retryKey);</span><br><span class="line">            <span class="keyword">if</span> (<span class="string">"false"</span>.equals(retryValue)) &#123;</span><br><span class="line">                map.put(method.getName() + <span class="string">".retries"</span>, <span class="string">"0"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;ArgumentConfig&gt; arguments = method.getArguments(); <span class="comment">// ③</span></span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isNotEmpty(arguments)) &#123;</span><br><span class="line">            <span class="keyword">for</span> (ArgumentConfig argument : arguments) &#123;</span><br><span class="line">                <span class="comment">// convert argument type</span></span><br><span class="line">                <span class="keyword">if</span> (argument.getType() != <span class="keyword">null</span> &amp;&amp; argument.getType().length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    Method[] methods = interfaceClass.getMethods();</span><br><span class="line">                    <span class="comment">// visit all methods</span></span><br><span class="line">                    <span class="keyword">if</span> (methods != <span class="keyword">null</span> &amp;&amp; methods.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; methods.length; i++) &#123;</span><br><span class="line">                            String methodName = methods[i].getName();</span><br><span class="line">                            <span class="comment">// target the method, and get its signature</span></span><br><span class="line">                            <span class="keyword">if</span> (methodName.equals(method.getName())) &#123;</span><br><span class="line">                                Class&lt;?&gt;[] argtypes = methods[i].getParameterTypes();</span><br><span class="line">                                <span class="comment">// one callback in the method</span></span><br><span class="line">                                <span class="keyword">if</span> (argument.getIndex() != -<span class="number">1</span>) &#123;</span><br><span class="line">                                    <span class="keyword">if</span> (argtypes[argument.getIndex()].getName().equals(argument.getType())) &#123;</span><br><span class="line">                                        appendParameters(map, argument, method.getName() + <span class="string">"."</span> + argument.getIndex());</span><br><span class="line">                                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                        <span class="comment">// throw exception</span></span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                    <span class="comment">// multiple callbacks in the method</span></span><br><span class="line">                                    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; argtypes.length; j++) &#123;</span><br><span class="line">                                        Class&lt;?&gt; argclazz = argtypes[j];</span><br><span class="line">                                        <span class="keyword">if</span> (argclazz.getName().equals(argument.getType())) &#123;</span><br><span class="line">                                            appendParameters(map, argument, method.getName() + <span class="string">"."</span> + j);</span><br><span class="line">                                            <span class="keyword">if</span> (argument.getIndex() != -<span class="number">1</span> &amp;&amp; argument.getIndex() != j) &#123;</span><br><span class="line">                                                <span class="comment">// throw exception</span></span><br><span class="line">                                            &#125;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (argument.getIndex() != -<span class="number">1</span>) &#123;</span><br><span class="line">                    appendParameters(map, argument, method.getName() + <span class="string">"."</span> + argument.getIndex());</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// handle exception</span></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="comment">// end of methods for</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>解析服务的方法列表。①将服务方法信息放入map；②方法级别的retry配置，如果配置的是false，则retry为0；再存入map；③解析方法参数信息，存入map。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (ProtocolUtils.isGeneric(generic)) &#123; </span><br><span class="line">    map.put(GENERIC_KEY, generic);</span><br><span class="line">    map.put(METHODS_KEY, ANY_VALUE);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    String revision = Version.getVersion(interfaceClass, version);</span><br><span class="line">    <span class="keyword">if</span> (revision != <span class="keyword">null</span> &amp;&amp; revision.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        map.put(REVISION_KEY, revision);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames();</span><br><span class="line">    <span class="keyword">if</span> (methods.length == <span class="number">0</span>) &#123;</span><br><span class="line">        logger.warn(<span class="string">"No method found in service interface "</span> + interfaceClass.getName());</span><br><span class="line">        map.put(METHODS_KEY, ANY_VALUE);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        map.put(METHODS_KEY, StringUtils.join(<span class="keyword">new</span> HashSet&lt;String&gt;(Arrays.asList(methods)), <span class="string">","</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果是泛化实现，则填充generic=true，和methods=”*”的值到map中。如果不是泛化实现，填充method版本信息。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!ConfigUtils.isEmpty(token)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (ConfigUtils.isDefault(token)) &#123;</span><br><span class="line">        map.put(TOKEN_KEY, UUID.randomUUID().toString());</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        map.put(TOKEN_KEY, token);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果启用了令牌机制，将令牌信息放入map。如果令牌配置为default，通过uuid生成。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String host = <span class="keyword">this</span>.findConfigedHosts(protocolConfig, registryURLs, map);</span><br><span class="line">Integer port = <span class="keyword">this</span>.findConfigedPorts(protocolConfig, name, map);</span><br><span class="line">URL url = <span class="keyword">new</span> URL(name, host, port, getContextPath(protocolConfig).map(p -&gt; p + <span class="string">"/"</span> + path).orElse(path), map);</span><br></pre></td></tr></table></figure></p>
+<p>解析服务提供者的host和ip，然后构建服务暴露的URl。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!SCOPE_NONE.equalsIgnoreCase(scope)) &#123; <span class="comment">// ①</span></span><br><span class="line">    <span class="comment">// ②</span></span><br><span class="line">    <span class="keyword">if</span> (!SCOPE_REMOTE.equalsIgnoreCase(scope)) &#123;</span><br><span class="line">        exportLocal(url);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ③</span></span><br><span class="line">    <span class="keyword">if</span> (!SCOPE_LOCAL.equalsIgnoreCase(scope)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!isOnlyInJvm() &amp;&amp; logger.isInfoEnabled()) &#123;</span><br><span class="line">            logger.info(<span class="string">"Export dubbo service "</span> + interfaceClass.getName() + <span class="string">" to url "</span> + url);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isNotEmpty(registryURLs)) &#123; <span class="comment">// ④</span></span><br><span class="line">            <span class="keyword">for</span> (URL registryURL : registryURLs) &#123;</span><br><span class="line">                <span class="comment">//if protocol is only injvm ,not register</span></span><br><span class="line">                <span class="keyword">if</span> (LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) &#123; <span class="comment">// ⑤</span></span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                url = url.addParameterIfAbsent(DYNAMIC_KEY, registryURL.getParameter(DYNAMIC_KEY));</span><br><span class="line">                URL monitorUrl = loadMonitor(registryURL); <span class="comment">// ⑥</span></span><br><span class="line">                <span class="keyword">if</span> (monitorUrl != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    url = url.addParameterAndEncoded(MONITOR_KEY, monitorUrl.toFullString());</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (logger.isInfoEnabled()) &#123;</span><br><span class="line">                    logger.info(<span class="string">"Register dubbo service "</span> + interfaceClass.getName() + <span class="string">" url "</span> + url + <span class="string">" to registry "</span> + registryURL);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// For providers, this is used to enable custom proxy to generate invoker</span></span><br><span class="line">                String proxy = url.getParameter(PROXY_KEY);</span><br><span class="line">                <span class="keyword">if</span> (StringUtils.isNotEmpty(proxy)) &#123;</span><br><span class="line">                    registryURL = registryURL.addParameter(PROXY_KEY, proxy);</span><br><span class="line">                &#125;</span><br><span class="line">                Invoker&lt;?&gt; invoker = PROXY_FACTORY.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(EXPORT_KEY, url.toFullString())); <span class="comment">// ⑦</span></span><br><span class="line">                DelegateProviderMetaDataInvoker wrapperInvoker = <span class="keyword">new</span> DelegateProviderMetaDataInvoker(invoker, <span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">                Exporter&lt;?&gt; exporter = protocol.export(wrapperInvoker); <span class="comment">// ⑧</span></span><br><span class="line">                exporters.add(exporter);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Invoker&lt;?&gt; invoker = PROXY_FACTORY.getInvoker(ref, (Class) interfaceClass, url);</span><br><span class="line">            DelegateProviderMetaDataInvoker wrapperInvoker = <span class="keyword">new</span> DelegateProviderMetaDataInvoker(invoker, <span class="keyword">this</span>);</span><br><span class="line">            Exporter&lt;?&gt; exporter = protocol.export(wrapperInvoker);</span><br><span class="line">            exporters.add(exporter);</span><br><span class="line">        &#125;</span><br><span class="line">        MetadataReportService metadataReportService = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> ((metadataReportService = getMetadataReportService()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            metadataReportService.publishProvider(url);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>①如果scope配置不为none，则进行服务暴露；②如果scope配置不为remote，则在本地暴露服务；③如果scope配置不为local，则在remote暴露服务。④循环每一个注册地址，进行服务暴露；⑤如果protocol为local，则不暴露；⑥根据注册地址，加载monitor地址；⑦通过动态代理机制创建Invoker；⑧调用RegistryProtocol方法暴露服务。    </p>
+<h2 id="dubbo服务发现"><a href="#dubbo服务发现" class="headerlink" title="dubbo服务发现"></a>dubbo服务发现</h2><p>未完待续… </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://ljm516.github.io/2019/11/18/dubbo源码学习之服务注册于发现/" data-id="ck3bsuh0e0030rss66sw4hwtr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dubbo/">dubbo</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/11/20/dubbo源码学习之服务负载均衡实现/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          dubbo源码学习之服务负载均衡实现
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/11/13/dubbo源码学习之SPI机制/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">dubbo源码学习之SPI机制</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/broker/">broker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consumer/">consumer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dubbo/">dubbo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/notes/">notes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/producer/">producer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文件处理/">文件处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/JVM/" style="font-size: 18px;">JVM</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/dubbo/" style="font-size: 16px;">dubbo</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/notes/" style="font-size: 10px;">notes</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/多线程/" style="font-size: 12px;">多线程</a> <a href="/tags/文件处理/" style="font-size: 10px;">文件处理</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/11/23/dubbo源码学习之集群容错机制/">dubbo源码学习之集群容错机制</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/20/dubbo源码学习之服务负载均衡实现/">dubbo源码学习之服务负载均衡实现</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/18/dubbo源码学习之服务注册于发现/">dubbo源码学习之服务注册与发现</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/13/dubbo源码学习之SPI机制/">dubbo源码学习之SPI机制</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/21/java中线程池/">java中线程池</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
