@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>java集合理解之List | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="深入理解java中的集合类List，以及其主要的实现类。">
+<meta name="keywords" content="Java数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java集合理解之List">
+<meta property="og:url" content="https://ljm516.github.io/2018/12/05/java集合理解之List/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="深入理解java中的集合类List，以及其主要的实现类。">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://ljm516.github.io/2018/12/05/java集合理解之List/List的主要实现.png">
+<meta property="og:image" content="https://ljm516.github.io/2018/12/05/java集合理解之List/add_index.png">
+<meta property="og:updated_time" content="2019-12-01T08:25:10.541Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java集合理解之List">
+<meta name="twitter:description" content="深入理解java中的集合类List，以及其主要的实现类。">
+<meta name="twitter:image" content="https://ljm516.github.io/2018/12/05/java集合理解之List/List的主要实现.png">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://ljm516.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-java集合理解之List" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/05/java集合理解之List/" class="article-date">
+  <time datetime="2018-12-05T15:34:56.000Z" itemprop="datePublished">2018-12-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      java集合理解之List
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>深入理解java中的集合类List，以及其主要的实现类。</p>
+<a id="more"></a>
+<p><div align="left"><img src="/2018/12/05/java集合理解之List/List的主要实现.png" alt="List的主要实现类"><br>如图所示，在java.util包中，ArrayList、Vector、LinkedList是对List的几个主要的实现类。三者有各自的特点：</div></p>
+<ul>
+<li>ArrayList: 底层数据存储是有个数组实现。对数据的插入删除效率低、查询快、线程不安全。</li>
+<li>Vector: 线层安全的list实现。</li>
+<li>LinkedList: 数据存储使用链表实现。数据的插入删除效率高，查询慢、线程不安全。</li>
+</ul>
+<p>接下来逐个分析其实现原理。</p>
+<h2 id="ArrayList的实现"><a href="#ArrayList的实现" class="headerlink" title="ArrayList的实现"></a>ArrayList的实现</h2><p>ArrayList基于动态数组存储元素，本身不是线程安全的。针对数据的插入删除，效率不高。在对数据的插入删除操作涉及数组容器的变化，ArrayList每次扩量每次增加50%。ArrayList的元素可重复，允许null值，且是顺序的。</p>
+<h3 id="ArrayList添加元素"><a href="#ArrayList添加元素" class="headerlink" title="ArrayList添加元素"></a>ArrayList添加元素</h3><p>ArrayList提供了两个添加元素的方法，boolean add(E e)和void add(int index, E element)。前者新加的元素直接放在数组尾部，后者新加的元素放在给定的index，如果该index之后还有元素，其它元素往后移。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">// Increments modCount!!</span></span><br><span class="line">    elementData[size++] = e;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法首先确定是否需要进行数组扩容，扩容机制是在原有的size基础上扩容50%，如果原有数组为空数组，则默认数组容量为10；扩容之后，size自增1，在对应的位置放入新增元素。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    rangeCheckForAdd(index);</span><br><span class="line"></span><br><span class="line">    ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">// Increments modCount!!</span></span><br><span class="line">    System.arraycopy(elementData, index, elementData, index + <span class="number">1</span>,</span><br><span class="line">                     size - index);</span><br><span class="line">    elementData[index] = element;</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该方法首先检测传入的index是否合法，判断条件是<code>index &gt; size || index &lt; 0</code>，如果成立则会抛出IndexOutOfBoundsException异常；再执行扩容操作；<code>System.arraycopy(elementData, index, elementData, index + 1,size - index);</code>对原数组进行复制，产生的新数组在将改index后的数据（包括原来该index的数据）往后移动，index的位置先用原来的数据占位，然后element[index] = element，替换成目标值，最后进行size+1。<br><img src="/2018/12/05/java集合理解之List/add_index.png" alt="add_index"></p>
+<h3 id="ArrayList的获取元素"><a href="#ArrayList的获取元素" class="headerlink" title="ArrayList的获取元素"></a>ArrayList的获取元素</h3><p>ArrayList提供了一个get方法实现，该get方法接收一个int类型的下标，返回该下标的元素。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    rangeCheck(index);</span><br><span class="line">    <span class="keyword">return</span> elementData(index);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先检测index的下标值是否合法，然后返回数组对应下标值。因为ArrayList存储由数组实现，所有查询很快，时间复杂度为O(1);</p>
+<h3 id="modCount-和-ConcurrentModificationException"><a href="#modCount-和-ConcurrentModificationException" class="headerlink" title="modCount 和 ConcurrentModificationException"></a>modCount 和 ConcurrentModificationException</h3><p>对集合进行循环时，然后在循环体内对集合进行新增或删除元素，则有可能发生ConcurrentModificationException。看下面代码:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; nums = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        nums.add(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> idx = <span class="number">0</span>; idx &lt; nums.size(); idx++) &#123;</span><br><span class="line">        nums.remove(nums.get(idx));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; nums = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        nums.add(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (Integer i : nums) &#123;</span><br><span class="line">        nums.remove(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; nums = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        nums.add(i);</span><br><span class="line">    &#125;</span><br><span class="line">    Iterator it = nums.iterator();</span><br><span class="line">    <span class="keyword">while</span> (it.hasNext()) &#123;</span><br><span class="line">        Integer i = (Integer) it.next();</span><br><span class="line">        nums.remove(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>执行test1方法，能正常完成，但是nums中的元素并不能全部被移除；test2方法执行会发生ConcurrentModificationException。<code>for(Integer i : nums)</code>这种写法是java中语法糖，经过编译之后，生成的其实是Iterator迭代器类；test3方法和test2效果相同。</p>
+<p>nums.iterator()返回的是一个Itr对象，Itr实现了Iterator接口。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Itr</span> <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> cursor; <span class="comment">// 返回元素的下标</span></span><br><span class="line">    <span class="keyword">int</span> lastRet = -<span class="number">1</span>; <span class="comment">// 最后一个元素的下标，如果没有返回-1</span></span><br><span class="line">    <span class="keyword">int</span> expectedModCount = modCount; <span class="comment">// 期望的modCount值，初始为ArrayList的modCount值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面看下它的next方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    checkForComodification();</span><br><span class="line">    <span class="keyword">int</span> i = cursor;</span><br><span class="line">    <span class="keyword">if</span> (i &gt;= size)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    Object[] elementData = ArrayList.<span class="keyword">this</span>.elementData;</span><br><span class="line">    <span class="keyword">if</span> (i &gt;= elementData.length)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    cursor = i + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> (E) elementData[lastRet = i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先会对ArrayList的modCount值的判断，如果modCount!=expectedModcount值，这会抛出ConcurrentModificationException。这里就是上面test2和test3方法的问题所在: 当list使用迭代器进行循环迭代时，如果在循环体内执行了list.remove(o)操作，ArrayList的remove方法会对modCount值进行+1，这个时候迭代器（Itr类）中的expectModCount值并没有更新，然后迭代器再次去下一个元素时，就会发现modCount!=expectedModcount。</p>
+<p>那么针对test2和test3情况如果解决呢？既然已经通过list获取了它的迭代器，那么就是用它的迭代器进行元素删除即可。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lastRet &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">    checkForComodification();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        ArrayList.<span class="keyword">this</span>.remove(lastRet);</span><br><span class="line">        cursor = lastRet;</span><br><span class="line">        lastRet = -<span class="number">1</span>;</span><br><span class="line">        expectedModCount = modCount;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException ex) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在try…catch体内，首先内部类调用了其外部类（ArrayList）的remove方法，进行元素删除，这是modCount值+1，随后将变化了的modCount值赋给了expectModCount。这样的话，在执行next方法判断modCount!=expectedModcount时就不会抛出异常。</p>
+<h2 id="Vector类的实现"><a href="#Vector类的实现" class="headerlink" title="Vector类的实现"></a>Vector类的实现</h2><p>Vector和ArrayList类似，底层存储也是使用数据实现、初始化容量大小为10、扩容默认为当前的一倍、线程安全。它之所以能做到线程安全，是因为所有的方法都是synchronized修饰的。Vector对集合元素的操作和ArrayList基本相同，所以就不做过多的了解。</p>
+<h2 id="LinkedList实现"><a href="#LinkedList实现" class="headerlink" title="LinkedList实现"></a>LinkedList实现</h2><p>LinkedList底层存储基于链表实现，链表的特点就是每个节点相互连接，非头结点和尾结点都有其前驱节点后后继节点，这在存储上变现为持有前驱节点和后继节点的指针，在对链表进行插入和删除元素操作时，只需要改变对应的前驱结点和后继节点的指向即可，而且没有长度限制，所以针对插入删除操作表ArrayList快。但是在进行遍历时，就需要从头结点或尾结点逐个查找，无法通过下标直接定位，所有在查询的场景下没有ArrayList快。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> size = <span class="number">0</span>; <span class="comment">// LinkedList的长度</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; first; <span class="comment">// 头结点</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; last; <span class="comment">// 尾结点</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    E item;</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line"></span><br><span class="line">    Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.item = element;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">        <span class="keyword">this</span>.prev = prev;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Node是LinkedList的内部类，它持有当前元素以及前驱节点和后继节点的引用，这方便访问其上一个和下一个元素。</p>
+<h3 id="LinkedList的添加元素"><a href="#LinkedList的添加元素" class="headerlink" title="LinkedList的添加元素"></a>LinkedList的添加元素</h3><p>LinkedList提供了以下几个方法添加一个元素:</p>
+<ul>
+<li>add(int index, E e); // 向指定的下标新增一个元素</li>
+<li>add(E e); // 向链表尾部新增一个元素</li>
+<li>addFirst(E e); // 在链表头部新增一个元素</li>
+<li>addLast(E e);  // 在链表尾部新一个元素</li>
+</ul>
+<h4 id="向尾部新增一个元素"><a href="#向尾部新增一个元素" class="headerlink" title="向尾部新增一个元素"></a>向尾部新增一个元素</h4><p>add(E e)方法默认在链表的尾部新增一个元素，和addLast(E e)方法一样，其实其内部实现也一致，都是调用了linkLast方法，向尾部追加一个元素。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linkLast</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; l = last;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(l, e, <span class="keyword">null</span>);</span><br><span class="line">    last = newNode;</span><br><span class="line">    <span class="keyword">if</span> (l == <span class="keyword">null</span>)</span><br><span class="line">        first = newNode;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        l.next = newNode;</span><br><span class="line">    size++;</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先将原尾结点赋值给l； 然后新增一个Node，并设置前驱节点为l,后继节点为null,e为当前元素；将LinkedList的last设置为新Node；如果原尾结点l为null，则说明本次是第一次新增元素，将LinkedList的头结点设置为新增节点，否者的话，设置原尾结点l的next节点为新增节点。</p>
+<h4 id="向头部新增一个元素"><a href="#向头部新增一个元素" class="headerlink" title="向头部新增一个元素"></a>向头部新增一个元素</h4><p>向LinkedList头节点新增一个元素，内部调用linkFirst方法实现。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">linkFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; f = first;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(<span class="keyword">null</span>, e, f);</span><br><span class="line">    first = newNode;</span><br><span class="line">    <span class="keyword">if</span> (f == <span class="keyword">null</span>)</span><br><span class="line">        last = newNode;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        f.prev = newNode;</span><br><span class="line">    size++;</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先将原头节点赋值为f；然后新增一个Node，并设置前驱接点为null，后继节点为f，e为当前元素；将LinkedList的first设置为新Node；如果原头结点f为null，则说明是第一个新增元素，设置LinkedList的尾结点为新增节点，否者的话，设置原头节点的prev节点为新节点。</p>
+<h4 id="向指定下标新增元素"><a href="#向指定下标新增元素" class="headerlink" title="向指定下标新增元素"></a>向指定下标新增元素</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    checkPositionIndex(index);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (index == size)</span><br><span class="line">        linkLast(element);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        linkBefore(element, node(index));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先会检查下标的合法性，如果非法则会抛出下标越界异常；然后判断如果传过的index等于链表长度，则直接在链表尾部新增一个节点，否则的话，先调用node方法，获取该index的前一个节点，然后调用linkBefore方法插入数据。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Node&lt;E&gt; <span class="title">node</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (index &lt; (size &gt;&gt; <span class="number">1</span>)) &#123;</span><br><span class="line">        Node&lt;E&gt; x = first;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; index; i++)</span><br><span class="line">            x = x.next;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;E&gt; x = last;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = size - <span class="number">1</span>; i &gt; index; i--)</span><br><span class="line">            x = x.prev;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该方法是获取指定index的节点，这个方法做了优化，<code>size&gt;&gt;1</code>向右移一位，得到size的一半，然后判断index是链表的前半部分还是后半部分，这样的话，只需要遍历链表的一半获取该index的节点，然后将需要新增的元素和当前index的节点传入linkBefore方法。<br>接下来看下linkBefore的实现。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linkBefore</span><span class="params">(E e, Node&lt;E&gt; succ)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// assert succ != null;</span></span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; pred = succ.prev;</span><br><span class="line">    <span class="keyword">final</span> Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(pred, e, succ);</span><br><span class="line">    succ.prev = newNode;</span><br><span class="line">    <span class="keyword">if</span> (pred == <span class="keyword">null</span>)</span><br><span class="line">        first = newNode;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        pred.next = newNode;</span><br><span class="line">    size++;</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先获取指定index节点的上一个节点，赋值给pred；然后新增一个Node，设置前驱节点为pred，后继节点为index的节点，元素为e；然后设置index的节点的前驱节点为新Node；如果index的节点的前驱节点为null，那么这个节点原来的头节点，然后设置头节点为新Node；否则设置index的节点的前驱节点的下一个节点为节点。</p>
+<h3 id="LinkedList获取一个元素"><a href="#LinkedList获取一个元素" class="headerlink" title="LinkedList获取一个元素"></a>LinkedList获取一个元素</h3><p>LinkedList提供了以下几个方法获取一个元素:</p>
+<ul>
+<li>get(int index); // 获取指定下标的元素</li>
+<li>getFirst(); // 获取头节点元素</li>
+<li>getLast(); // 获取尾结点元素</li>
+</ul>
+<p>get(int index)方法首先判断index的合法性，然后遍历节点，遍历节点调用的node(int index)方法，node方法在上面已经分析过了，这里不在赘述。getFirst()和getLast()见名思意了，直接返回头节点和尾结点的元素，如果头节点和尾结点为null，则抛出NoSuchElementException。</p>
+<h3 id="LinkedList的其它方法了解"><a href="#LinkedList的其它方法了解" class="headerlink" title="LinkedList的其它方法了解"></a>LinkedList的其它方法了解</h3><ul>
+<li>E peek(): 返回链表的头节点元素，但是不移除；如果链表为kong，返回null；</li>
+<li>E poll(): 返回链表的头节点元素，并且移除；如果链表weikong，返回null；</li>
+<li>E remove(): 返回链表头节点元素，并移除；如果链表为空，抛出NoSuchElementException；</li>
+<li>boolean offer(E e): 在链表尾部添加一个指定元素；</li>
+<li>boolean offerFirst(E e): 在链表的头部添加一个指定的元素；</li>
+<li>boolean offerLast(E e ): 在链表的尾部添加一个指定的元素；<br>… 还有其它很多类似peek，poll，push的方法，大同小异。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://ljm516.github.io/2018/12/05/java集合理解之List/" data-id="ck3mqpl3n0033i9s6glzz4lap" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java数据结构/">Java数据结构</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/08/java集合理解之HashMap/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          java集合理解之Map
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/11/05/sparkTransformation-Actions/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">spark transformation 和 actions 操作</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java数据结构/">Java数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/broker/">broker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consumer/">consumer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dubbo/">dubbo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/notes/">notes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/producer/">producer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文件处理/">文件处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/JVM/" style="font-size: 18px;">JVM</a> <a href="/tags/Java数据结构/" style="font-size: 12px;">Java数据结构</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/dubbo/" style="font-size: 16px;">dubbo</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/notes/" style="font-size: 10px;">notes</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/多线程/" style="font-size: 12px;">多线程</a> <a href="/tags/文件处理/" style="font-size: 10px;">文件处理</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/11/23/dubbo源码学习之集群容错机制/">dubbo源码学习之集群容错机制</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/20/dubbo源码学习之服务负载均衡实现/">dubbo源码学习之服务负载均衡实现</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/18/dubbo源码学习之服务注册于发现/">dubbo源码学习之服务注册与发现</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/13/dubbo源码学习之SPI机制/">dubbo源码学习之SPI机制</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/21/java中线程池/">java中线程池</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
