@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>深入理解synchronized关键字 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文深入理解Java的synchronized关键字。">
+<meta name="keywords" content="多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解synchronized关键字">
+<meta property="og:url" content="https://ljm516.github.io/2019/07/03/深入理解synchronized关键字/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="本文深入理解Java的synchronized关键字。">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://ljm516.github.io/2019/07/03/深入理解synchronized关键字/Synchronized_javap.png">
+<meta property="og:image" content="https://ljm516.github.io/2019/07/03/深入理解synchronized关键字/锁消除.png">
+<meta property="og:updated_time" content="2019-12-05T16:11:35.896Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解synchronized关键字">
+<meta name="twitter:description" content="本文深入理解Java的synchronized关键字。">
+<meta name="twitter:image" content="https://ljm516.github.io/2019/07/03/深入理解synchronized关键字/Synchronized_javap.png">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://ljm516.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-深入理解synchronized关键字" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/07/03/深入理解synchronized关键字/" class="article-date">
+  <time datetime="2019-07-03T15:34:55.000Z" itemprop="datePublished">2019-07-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      深入理解synchronized关键字
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文深入理解Java的synchronized关键字。</p>
+<a id="more"></a>
+<p>synchronized关键字的作用是用来实现线程间的同步，它的工作时对同步的代码加锁，使的每次只能有一个线程进入同步块，从而保证线程间的安全性。synchronized关键字的用法:</p>
+<ul>
+<li>用在对象上: 给指定的对象加锁，进入同步代码前获得指定对象的锁。</li>
+<li>直接作用于实例方法: 相当于与当前实例加锁，进入同步代码前要获得当前实例的锁。</li>
+<li>直接用于静态方法: 相当于对当前类加锁，进入同步代码前要获取当前类的锁。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedLearn</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> num = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Object lock = <span class="keyword">new</span> Object();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        AddTask task =  <span class="keyword">new</span> AddTask();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(task);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(task);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">        t1.join();</span><br><span class="line">        t2.join();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"after: "</span> + num);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (lock) &#123; <span class="comment">// 作用在指定的对象上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">                num++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">synchronizeAdd</span><span class="params">()</span> </span>&#123; <span class="comment">// 作用在类方法上</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">            num++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AddTask</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">()</span> </span>&#123; <span class="comment">// 作用在实例方法上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">                num++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            add();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的例子，给出了synchronized关键字作用域的例子，这三种用法最终得出的结果都是20000。</p>
+<p>除了用于线程同步、确保线程安全外，关键字synchronized还可以保证线程间的可见性和有序性。从可见性角度讲，可以替代volatile关键字，只是使用没那么方便。就有序性而言，synchronized限制每次只有一个线程可以访问同步块，因此，无论同步块内的代码如何被乱序执行，只要保证串行语义一致，那么执行的结果总是一样的。</p>
+<p>那么Synchronized是如果实现线程间的同步的呢？看下面一段代码:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">sychAdd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">10000</span>; j++) &#123;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>SynchronizedDemo类有个两个方法，其中sychAdd方法是用synchronized修饰的，add方法在内部对for循环加了Synchronized同步块。下图是使用 javap -v 反编译生成的指令集。<br><img src="/2019/07/03/深入理解synchronized关键字/Synchronized_javap.png" alt="反编译后"></p>
+<p>这两个方法生成的指令集有所不同，sychAdd方法被标记为ACC_SYNCHRONIZED，表示需要同步访问，要访问这个方法，需要先拿到对象锁。add方法生成了对应的monitorenter和monitorexit这两个指令，对应着Synchronized进入和退出，可以看到add方法生成的第15行和21行有两个monitorexit指令，这是因为编译为同步代码块加了一个隐式的try…finally，在finally会执行monitorexit指令释放锁。</p>
+<h2 id="互斥同步"><a href="#互斥同步" class="headerlink" title="互斥同步"></a>互斥同步</h2><p>在Java中最基本的互斥同步手段就是使用Synchronized关键字，Synchronized关键字经过编译后，会在同步块前后生成monitorenter和monitorexit两个指令。在执行monitorenter指令时，首先要获取对象的锁，如果没有指明加锁对象，那就看Synchronized修饰的是实例方法和类方法，去取对应的实例或Class对象来作为锁对象。如果这个对象锁没有被锁定，或者当前线程已经拥有了这个对象的锁，把锁的计数器+1，相应的，在执行monitorexit指令时会将锁计数器减1，当计数器为0时，锁就被释放。如果获取对象锁失败，那当前线程就要阻塞等待，直到对象所被另一个现场称释放为止。Synchronized同步块对同一线程来说是可以重入的，不会出现自己把自己锁死的问题。其次，同步块在已进入的线程执行完之前，会阻塞后面其它线程的进入。</p>
+<p>除了Synchronized关键字之外，还可以使用JUC包下的ReentrantLock来实现同步，基本用法很相似，都具备一样的线程重入特性，只是代码写法上有点区别，一个表现在API层面的互斥锁，另一个是为原生语法层面的互斥锁。ReentrantLock也提供了一些高级特性，比如等待可中断、实现公平锁以及绑定多个条件等。在JDK1.6之前，ReentrantLock的性能是由于Synchronized的，在1.6发布之后，对Synchronized做了很多的优化，性能基本和ReentrantLock持平。</p>
+<h2 id="非阻塞同步"><a href="#非阻塞同步" class="headerlink" title="非阻塞同步"></a>非阻塞同步</h2><p>互斥同步最主要的问题是进行线程阻塞和唤醒所带来的性能问题，因此也叫阻塞同步。这种同步方式是一种悲观的并发策略，总是认为只要不做正确的同步措施，就肯定会出现问题，无论共享数据是否真的会出现竞争，都要进行加锁。与之对应的，有一种基于冲突检测的乐观并发策略:先进行操作，如果没有其它线程争用共享数据，那操作就成功；如果共享数据有争用，产生了冲突，那就再采取补偿措施，这种乐观的并发策略的许多实现是不需要把线程挂起，因此这种同步操作成为非则塞同步。</p>
+<h2 id="对象头、偏向锁和轻量级锁"><a href="#对象头、偏向锁和轻量级锁" class="headerlink" title="对象头、偏向锁和轻量级锁"></a>对象头、偏向锁和轻量级锁</h2><p>偏向锁和轻量级锁，它们的引入是为了解决在没有多线程竞争或基本没有竞争的场景下因使用传统锁机制带来的性能开销问题。在看这几种锁机制的实现前，我们先来了解下对象头，它是实现多种锁机制的基础。</p>
+<h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>HotSpot虚拟机的对象头的分为两部分信息，第一部分用户存储对象自身的运行时数据，如哈希码，GC分代年龄等。官方成为”Mark Word“，它是实现轻量级锁和偏向锁的关键。另一部分用于存储向方法区对象类型数据的指针，如果是数组对象，还会有一个额外的部分存储数据长度。</p>
+<table>
+<thead>
+<tr>
+<th>存储内容</th>
+<th>标志位</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对象哈希码、对象分代年龄</td>
+<td>01</td>
+<td>未锁定</td>
+</tr>
+<tr>
+<td>指向锁记录的指针</td>
+<td>00</td>
+<td>轻量级锁定</td>
+</tr>
+<tr>
+<td>指向重量级锁的指针</td>
+<td>10</td>
+<td>膨胀（重量级锁定)</td>
+</tr>
+<tr>
+<td>空，不需要记录信息</td>
+<td>11</td>
+<td>GC标记</td>
+</tr>
+<tr>
+<td>偏向线程ID、偏向时间戳、对象分代年龄</td>
+<td>01</td>
+<td>可偏向</td>
+</tr>
+</tbody>
+</table>
+<h3 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h3><p>轻量级锁不是用来代替重量级锁的，它的本意是没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗。<br><strong>加锁过程</strong><br>在代码进入同步块的时候，如果此同步对象没有被锁定（锁标志位为01状态），虚拟机首先将在当前线程的栈帧建立一个名为锁记录（Lock Record）的空间，用与存储锁对象目前的Mark Word的拷贝，官方成为Displaced Mark Word。然后虚拟机将使用CAS操作尝试将对象的Mark Word更新为指向Lock Record的指针。如果这个更新工作成功了，那么这个线程就拥有了该对象的锁，并且对象Mark Word的锁标志位将转变为”00”，即表示此对象处于轻量级锁定状态。如果这个更新操作失败了，虚拟机首先会检查对象的Mark Word是否指向当前线程的栈帧，如果只说明当前线程已经拥有了这个对象锁，那就可以直接进入同步块继续执行，否则说明这个锁对象已经被其它线程抢占了。如果有两条以上的线程争用同一个锁，那轻量级锁就不再有效，要膨胀为重量级锁，锁标志状态值变为”10”。Mark Word中存储的就是指向重量级（互斥量）的指针，后面等待锁的线程也要进入阻塞状态。</p>
+<p><strong>解锁过程</strong><br>解锁过程也是通过CAS操作来进行的，如果对象的Mark Word仍然指向着线程的锁记录，那就用CAS操作把对象当前的Mark Word和线程中复制的Displaced Mark Word替换回来。如果替换成功，整个同步过程完成，如果失败，说明有其它线程线程尝试过获取锁，那就要在释放锁的同时，唤醒被挂起的锁。</p>
+<h3 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h3><p>偏向锁的目的是消除数据在无竞争情况下的同步原语，进一步提供程序的运行性能。偏向锁会偏向于第一个获得它的线程，如果在接下来的执行过程中，该锁没有被其他线程获取，则持有偏向锁的线程将永远不需要进行同步。jvm通过-XX:+UseBiasedLocking开启偏向锁，JDK1.6默认开启。当锁对象第一次被线程获取的时候，虚拟机将会被对象头中的标志位设为“01”，即偏向模式。同时使用CAS操作把获取到这个锁的线程ID记录在对象的Mark Word之中，如果CAS操作成功，持有偏向锁的线程以后每次进入这个锁相关的同步块时，虚拟机都可以不再进行任何同步操作。当有另一个线程尝试去获取这个锁时，偏向模式就宣告结束。根据锁对象目前是否处于被锁定的状态，撤销偏向后 恢复到未锁定或轻量级所的状态，后续的同步操作就如轻量级那样执行。</p>
+<h2 id="锁优化"><a href="#锁优化" class="headerlink" title="锁优化"></a>锁优化</h2><p>JDK1.6之后对各种锁的技术进行了优化，如适应性自旋、锁消除、锁粗化以及上面提到的轻量级锁和偏向锁。这些技术都是为了在线程之间更高效地共享数据，以及解决竞争问题，从而提高程序的执行效率。</p>
+<h3 id="自旋锁与自适应自旋"><a href="#自旋锁与自适应自旋" class="headerlink" title="自旋锁与自适应自旋"></a>自旋锁与自适应自旋</h3><p>在互斥同步说到，对性能影响最大的是阻塞实现，挂起和恢复线程都需要转入到内核态去完成，这些操作给系统并发性能带来了很大的压力。如果物理机器有一个以上的处理器，能让两个或以上的线程同时并行执行，就可以让后面请求锁的那个线程“稍等一下”，但不要放弃处理器的执行时间，看看持有锁的线程是否很快就会释放锁。为了让线程等待，我们只需让线程执行一个忙循环（自旋），这就是所谓的自旋锁。</p>
+<p>自旋锁在JDK1.6默认开启，jvm参数为-XX:+UseSpinning。自旋等待不能代替阻塞，自旋等待虽然避免了线程切换的开销，但是要占用处理器的时间，因此，如果锁被占用时间很短，自旋等待效果就会很好。反之，如果锁被占用时间很长，那么自旋的线程只会白白消耗处理器资源，而不会做任何有效的工作，反而会带来性能上的浪费。因此，自旋等待的时间必须要有一定的限度，如果自旋超过了限定的次数，仍然没有获取到锁，就应该使用传统的方式去挂起线程。自旋次数默认是10次，可以通过-XX:PreBlockSpin来更改。</p>
+<p>JDK1.6引入了自适应的自旋锁，自适应意味着自旋的时间不再固定了，而是由前一次在同一个锁的自旋时间及锁的拥有者的状态来决定。如果在同一个锁对象上，自旋等待刚刚成功获取过锁，并且持有所得线程正在运行中，那么虚拟机就会认为这次自旋也很有可能再次成功，进而他允许自旋等待先对较长的时间。反之，如果对于某个锁，自旋很少成功获得过，那在以后要获得这个锁时，将可能省略掉自旋过程，以避免浪费处理器资源。</p>
+<h3 id="锁消除"><a href="#锁消除" class="headerlink" title="锁消除"></a>锁消除</h3><p>锁消除是指虚拟机即时编译器在运行时，对一些代码上要求同步，但是被检测到不可能存在共享数据竞争的锁进行消除。锁消除的主要判定依据来源于逃逸分析的数据支持，如果判断在一段代码中，堆上的数据都不会逃出去从而被其它线程访问到，那就可以把它们当做栈上的数据对待，认为它们是线程私有的，同步加锁就没有必要了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">contact</span><span class="params">(String s1, String s2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> s1 + s2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码经过javap反编译之后，生成的指令如下图：<br><img src="/2019/07/03/深入理解synchronized关键字/锁消除.png" alt="锁消除"></p>
+<p>这是JDK1.8编译的，可以看出，字符串的拼接转化为StringBuilder对象的连续append操作，StringBudiler是非线程安全的，但是在这个例子里，不存在线程安全问题。但是在JDK1.5之前，会转化成StringBuffer对象的连续append操作，StringBuffer是线程安全的，但是这里加锁是多余的。</p>
+<h3 id="锁粗化"><a href="#锁粗化" class="headerlink" title="锁粗化"></a>锁粗化</h3><p>原则上，在编写代码时，总是推荐将同步块的作用域限制的尽量小（只在共享数据的实际作用域才进行同步），这样是为了是的需要同步的操作数量尽可能的小，如果存在锁竞争，那等待锁的线程也能尽快拿到锁。大部分情况下，这个原则是正确的，但是如果一系列的操作都对同一个对象反复加锁和解锁，甚至加锁操作数是出现在循环体中的，那即使没有线程竞争，频繁地进行互斥同步也会导致不必要的性能消耗。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">demo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; <span class="number">10000</span>; j++) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的例子就是在循环体内不断的对同一对象反复加锁和解锁，如果对锁进行粗化，将Synchronized同步块放在for循环体外，就可以避免不必要的性能消耗。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://ljm516.github.io/2019/07/03/深入理解synchronized关键字/" data-id="ck3q284w7001s41s6vyyfnhqe" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/多线程/">多线程</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/20/线程基础/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          线程基础
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/06/20/内存分配和回收策略/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">内存分配和回收策略</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java数据结构/">Java数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/broker/">broker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consumer/">consumer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dubbo/">dubbo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/notes/">notes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/producer/">producer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/">redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文件处理/">文件处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/JVM/" style="font-size: 18px;">JVM</a> <a href="/tags/Java数据结构/" style="font-size: 12px;">Java数据结构</a> <a href="/tags/MySQL/" style="font-size: 12px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/dubbo/" style="font-size: 16px;">dubbo</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/notes/" style="font-size: 10px;">notes</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/redis/" style="font-size: 10px;">redis</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/多线程/" style="font-size: 14px;">多线程</a> <a href="/tags/文件处理/" style="font-size: 10px;">文件处理</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/11/23/dubbo源码学习之集群容错机制/">dubbo源码学习之集群容错机制</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/20/dubbo源码学习之服务负载均衡实现/">dubbo源码学习之服务负载均衡实现</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/18/dubbo源码学习之服务注册于发现/">dubbo源码学习之服务注册与发现</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/13/dubbo源码学习之SPI机制/">dubbo源码学习之SPI机制</a>
+          </li>
+        
+          <li>
+            <a href="/2019/10/21/java中线程池/">java中线程池</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
