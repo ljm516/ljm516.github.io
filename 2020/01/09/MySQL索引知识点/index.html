@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>MySQL索引知识点 | ljming的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="MySQL InnoDB存储引擎的索引知识点。">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL索引知识点">
+<meta property="og:url" content="https://ljm516.github.io/2020/01/09/MySQL索引知识点/index.html">
+<meta property="og:site_name" content="ljming的博客">
+<meta property="og:description" content="MySQL InnoDB存储引擎的索引知识点。">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://ljm516.github.io/2020/01/09/MySQL索引知识点/B+树.png">
+<meta property="og:image" content="https://ljm516.github.io/2020/01/09/MySQL索引知识点/数据页和索引页.png">
+<meta property="og:updated_time" content="2020-02-22T12:50:43.679Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL索引知识点">
+<meta name="twitter:description" content="MySQL InnoDB存储引擎的索引知识点。">
+<meta name="twitter:image" content="https://ljm516.github.io/2020/01/09/MySQL索引知识点/B+树.png">
+  
+    <link rel="alternate" href="/atom.xml" title="ljming的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ljming的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">程序人生</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://ljm516.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-MySQL索引知识点" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/01/09/MySQL索引知识点/" class="article-date">
+  <time datetime="2020-01-09T03:43:47.000Z" itemprop="datePublished">2020-01-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL索引知识点
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>MySQL InnoDB存储引擎的索引知识点。</p>
+<a id="more"></a>
+<p>InnoDB存储引擎支持以下几种常见的索引:</p>
+<ul>
+<li>B+树索引</li>
+<li>全文索引</li>
+<li>哈希索引</li>
+</ul>
+<h2 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+树索引"></a>B+树索引</h2><p>在B+树中，所有记录节点都是按键值的大小顺序的放在同一层的叶子节点上，由各叶子节点指针进行连接。<br><img src="/2020/01/09/MySQL索引知识点/B+树.png" alt="B+树结构"><br>数据库中的B+树索引可以分为聚集索引(clustered index)和辅助索引(secondary index)，其内部都是B+树的，及高度平衡的，叶子节点存放着所有的数据。聚集索引和辅助索引不同的是，叶子节点存放的是否是一整行的信息。</p>
+<h3 id="聚集索引"><a href="#聚集索引" class="headerlink" title="聚集索引"></a>聚集索引</h3><p>聚集索引是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点成为数据页。聚集索引的这个特性决定了索引组织表中数据也是索引的一部分。</p>
+<p>聚集索引的一个好处是，它对于主键的排序查找和范围查找速度非常快。叶子节点的数据就是用户所要查询的数据。</p>
+<p>数据页和非数据页，数据页上存放的是完整的每行数据，而在非数据页的索引页中，存放的仅仅是键值及指向数据页的偏移量，而不是一个完整的行记录。如果所示:<br><img src="/2020/01/09/MySQL索引知识点/数据页和索引页.png" alt=""></p>
+<h3 id="辅助索引"><a href="#辅助索引" class="headerlink" title="辅助索引"></a>辅助索引</h3><p>辅助索引叶子节点并不包含行记录的全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了一个书签，该书签用来告诉InnoDB存储引擎哪里可以找到与索引相对应的行数据。InnoDB存储引擎的辅助索引的书签就是相应行数据的聚集索引键。</p>
+<p>当通过辅助索引来寻找数据时，InnoDB存储引擎会遍历辅助索引并通过叶级别的指针获得指向主键索引的主键，然后再通过主键索引来找到一个完整的行记录。</p>
+<h3 id="联合索引"><a href="#联合索引" class="headerlink" title="联合索引"></a>联合索引</h3><p>联合索引由多个列组成，比如:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create table t (</span><br><span class="line">    a int,</span><br><span class="line">    b int,</span><br><span class="line">    primary key (a),</span><br><span class="line">    key idx_a_b (a,b)</span><br><span class="line">)ENGINE=InnoDB;</span><br></pre></td></tr></table></figure></p>
+<p>idx_a_b是一个联合索引，联合的列为(a,b)。本质上，联合索引也是一颗B+树，但是键值不是1，而是大于等于2。联合索引所有的数据都是按照(a,b)的顺序存放的，因此对于<code>select * from t where a=xxx and b=xxx</code>是可以使用idx_a_b索引的;<code>select * from t where a=xxx</code>也是可使用到这个索引。但是对于<code>select * from t where b=xxx</code>不能使用该索引（索引的最左原则）。</p>
+<h3 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h3><p>InnoDB支持覆盖索引，即从辅助索引中就可以得到查询的记录，而不需要查询聚集索引中的记录。使用覆盖索引的一个好处是，辅助索引中不包含整行记录，故其大小要远小于聚集索引，因此和以减少大量的IO操作。<br>辅助索引包含了主键信息，故其叶子节点存的数据为(primary key1, primary key2, key1, key2,…)。那么下面的查询语句都可仅使用一次辅助联合索引来完成:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select primary key,primary key2 from t where key1=xxx;</span><br><span class="line">select key1,key2 from t where key1=xxx;</span><br><span class="line">select key2 from t where key1=xxx;</span><br></pre></td></tr></table></figure></p>
+<p>覆盖索引还有个好处是对统计问题而言。例如<code>select count(*) from t</code>。InnoDB不会通过聚集索引进行统计，因为表t还有辅助索引，而辅助索引的大小远小于聚集索引，选择辅助索引可以减少IO操作。</p>
+<h2 id="索引失效问题"><a href="#索引失效问题" class="headerlink" title="索引失效问题"></a>索引失效问题</h2><p>有时候使用explain命令进行sql分析时，会发现优化器并没有选择索引去查找，而是通过扫描聚集索引，也即是直接进行全表扫描来得到数据。这种情况一般发生在范围查询、JOIN链接操作。下面记录比较常见的导致索引失效问题:</p>
+<ol>
+<li><p>where语句中包含or，可能导致索引失效 使用or不一定会使索引失效，需要看or的左右两边的查询列是否命中相同的索引。<br>即使a列和b列都有索引，下面的语句无法命中索引: select * from t where a = 1 or b=2;</p>
+</li>
+<li><p>where语句中索引列使用了负向查询，可能导致索引失效 负向查询包括: not,!=,&lt;&gt;,!&lt;,!&gt;,not in, not like等。 其实负向查询并不绝对会索引失效，这要看MySQL优化器的判断，全表扫描或者走了索引那个成本更低。</p>
+</li>
+<li><p>索引字段可以为null，使用is null 或者 is not null时，可能导致索引失效</p>
+</li>
+<li><p>在索引上使用内置函数，一定会导致索引失效 比如在索引列create_time上使用了函数，索引会失效: select * from t where DATE_ADD(create_time, INTERVAL 1 DAY) = 7; 优化建议，尽量在应用程序中进行计算和转换。</p>
+</li>
+<li><p>隐式的类型转换导致索引失效 比如下面语句中索引列user_id为varchar类型，不会命中索引: select * from t where user_id=12;</p>
+</li>
+<li><p>对索引列进行运算，一定会导致索引失效 运算如+,-,<em>,/等 select </em> from t where age - 1=10; 优化，将运算放在值上，或者在应用程序中直接算好 select * from t where age = 11;</p>
+</li>
+<li><p>like通配符可能会导致索引失效，解决方法有两种: ①将%移到后面去，如: select <em> from t where name like ‘李%’; ②利用覆盖索引来命中索引，如: select </em> from t where name like ‘%李%’;</p>
+</li>
+<li><p>联合索引中，where中索引列违背最左匹配原则，一定会导致索引失效 当创建一个联合索引的时候，如(a,b,c)，相当于创建了(a)、(a,b)和(a,b,c)三个索引，这就是最左匹配原则。 比如以下语句都不能命中索引: select <em> from t where b=1;, select </em> from t where c=3;, select * from t where b=2 and c=3;</p>
+</li>
+</ol>
+<p>MySQL优化器的最终选择，不走索引上面有提到，即使完全符合索引生效的场景，考虑到实际数据量等原因，最终是否使用索引还要看MySQL优化器的判断。当然你也可以在sql语句中写明强制走某个索引。</p>
+<p><strong>优化索引的一些建议:</strong></p>
+<p>禁止在更新频繁，区分度不高的属性上建立索引<br>更新会变更B+树，更新频繁的字段建立索引会大大减低数据库性能<br>区分度不大的属性，建立索引是没有什么意义，不能有效的过滤数据，性能与全表扫描类似<br>建立组合索引，必须把区分度高的字符</p>
+<h2 id="其它索引"><a href="#其它索引" class="headerlink" title="其它索引"></a>其它索引</h2><h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>哈希算法提供了O(1)的查询时间复杂度。InnoDB使用哈希算法来对字典进行查询，哈希冲突使用链表法。哈希索引对于字典的查找很快，如:<code>select * from t where a=xxx</code>，哈希索引只适用于等值查询，但是对于范围查找就不行了。 </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://ljm516.github.io/2020/01/09/MySQL索引知识点/" data-id="ck7vtn0uy0006jg5s46e2sj2x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/01/09/MySQL事务实现原理/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          MySQL事务实现原理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/11/23/dubbo源码学习之集群容错机制/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">dubbo源码学习之集群容错机制</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/BigData/">BigData</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/消息队列/">消息队列</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/经历/">经历</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JUC/">JUC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM/">JVM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java数据结构/">Java数据结构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ORM/">ORM</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/">RocketMQ</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/broker/">broker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consumer/">consumer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dubbo/">dubbo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maven/">maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/notes/">notes</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/producer/">producer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/多线程/">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/文件处理/">文件处理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试/">面试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/JUC/" style="font-size: 10px;">JUC</a> <a href="/tags/JVM/" style="font-size: 18px;">JVM</a> <a href="/tags/Java数据结构/" style="font-size: 12px;">Java数据结构</a> <a href="/tags/MySQL/" style="font-size: 14px;">MySQL</a> <a href="/tags/ORM/" style="font-size: 10px;">ORM</a> <a href="/tags/RocketMQ/" style="font-size: 16px;">RocketMQ</a> <a href="/tags/Spark/" style="font-size: 14px;">Spark</a> <a href="/tags/broker/" style="font-size: 10px;">broker</a> <a href="/tags/consumer/" style="font-size: 12px;">consumer</a> <a href="/tags/dubbo/" style="font-size: 16px;">dubbo</a> <a href="/tags/maven/" style="font-size: 10px;">maven</a> <a href="/tags/notes/" style="font-size: 10px;">notes</a> <a href="/tags/producer/" style="font-size: 10px;">producer</a> <a href="/tags/scrapy/" style="font-size: 18px;">scrapy</a> <a href="/tags/多线程/" style="font-size: 18px;">多线程</a> <a href="/tags/文件处理/" style="font-size: 10px;">文件处理</a> <a href="/tags/爬虫/" style="font-size: 20px;">爬虫</a> <a href="/tags/设计模式/" style="font-size: 12px;">设计模式</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a> <a href="/tags/面试题/" style="font-size: 10px;">面试题</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/01/09/MySQL事务实现原理/">MySQL事务实现原理</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/09/MySQL索引知识点/">MySQL索引知识点</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/23/dubbo源码学习之集群容错机制/">dubbo源码学习之集群容错机制</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/20/dubbo源码学习之服务负载均衡实现/">dubbo源码学习之服务负载均衡实现</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/18/dubbo源码学习之服务注册于发现/">dubbo源码学习之服务注册与发现</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 lijianmging<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
