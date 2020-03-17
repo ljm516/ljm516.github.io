@@ -12,6 +12,8 @@ tags:
 
 Map的主要实现有HashMap、HashTable、TreeMap、LinkedHashMap等。
 
+![map类结构图.png](map类的结构图)
+
 ## HashMap的实现
 在HashMap中，允许存放null键和值，元素是没有顺序的。HashMap容器的本质是一个哈希数组结构，在元素插入的时候，有存在hash冲突的可能。在HashMap中，为了解决hash冲突的问题，jdk1.7和1.8做了不同的实现。1.7中使用了数组+链表的数据结构存储，即当发生hash冲突，就将冲突的元素存放在链表中；1.8使用了数组+链表+红黑树的数据结构存储，相比1.7来说，多了红黑树的实现，当链表的长度超过8时，就将链表转换成红黑树。
 
@@ -20,17 +22,17 @@ Map的主要实现有HashMap、HashTable、TreeMap、LinkedHashMap等。
 - 扩容实现
 - get方法
 
-首先看下HashMap几个成员变脸代表的含义:
-- DEFAULT_INITIAL_CAPACITY= 1 << 4: 默认初始化map的容量大小=16
-- MAXIMUM_CAPACITY = 1 << 30: 最大的map容量=2^30
+首先看下HashMap几个成员变量代表的含义:
+- DEFAULT_INITIAL_CAPACITY= 1 << 4: 默认初始化容量大小=16
+- MAXIMUM_CAPACITY = 1 << 30: 最大容量=2^30
 - DEFAULT_LOAD_FACTOR = 0.75f: 默认负载因子
-- TREEIFY_THRESHOLD = 8: 链表转成数的长度
+- TREEIFY_THRESHOLD = 8: 链表转成树的长度
 - UNTREEIFY_THRESHOLD = 6: 取消树化的长度
 - MIN_TREEIFY_CAPACITY = 64: 可以树化的最小容量
 - Node<K,V>[] table: 节点容器，数组
-- int size: 容器大小
+- int size: 容器元素个数
 - int modCount: 容器修改次数
-- int threshold: 容器最大容量       
+- int threshold: 扩容的阈值       
 - float loadFactor: 负载因子
 
 ### put方法实现

@@ -8,7 +8,7 @@ tags:
 深入理解java中的集合类List，以及其主要的实现类。
 
 <!--more-->
-<div align=left>![List的主要实现类](List的主要实现.png)
+<div align=left>![list集合类的结构图.png](List的主要实现.png)
 如图所示，在java.util包中，ArrayList、Vector、LinkedList是对List的几个主要的实现类。三者有各自的特点：
 - ArrayList: 底层数据存储是有个数组实现。对数据的插入删除效率低、查询快、线程不安全。
 - Vector: 线层安全的list实现。
